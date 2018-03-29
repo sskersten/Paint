@@ -15,7 +15,24 @@ public class DrawActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // open image from photos or elsewhere
+                openImage();
             }
         });
+
+        findViewById(R.id.button_save_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // save the edited image to photos or elsewhere
+                saveImage();
+            }
+        });
+    }
+
+    private void openImage(){
+        // TODO: implement
+    }
+
+    private void saveImage(){
+        // TODO: implement
     }
 }
