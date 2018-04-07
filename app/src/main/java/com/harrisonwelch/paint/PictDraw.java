@@ -3,8 +3,11 @@ package com.harrisonwelch.paint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -15,6 +18,8 @@ public class PictDraw extends View {
     int currentHeight, currentWidth;        //height and width of our widget container
     Paint backgroundPaint;
     Paint mainPaint;
+
+
 
     public PictDraw(Context context) {
         super(context);
@@ -45,6 +50,7 @@ public class PictDraw extends View {
     // after converting it to px
     public void setStrokeThickness(int dpSize){
         mainPaint.setStrokeWidth(Helpers.dpToPx(dpSize, getContext()));
+        invalidate();
     }
 
 
@@ -52,8 +58,12 @@ public class PictDraw extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawLine(0, 0, currentWidth - 1, currentHeight - 1, mainPaint);
-        canvas.drawLine(0, currentHeight - 1, currentWidth - 1, 0, mainPaint);
+        if (drawShape) {/*
+            canvas.drawLine(0, 0, currentWidth - 1, currentHeight - 1, mainPaint);
+            canvas.drawLine(0, currentHeight - 1, currentWidth - 1, 0, mainPaint);*/
+
+            canvas.drawRect(rect, mainPaint);
+        }
     }
 
     @Override
@@ -63,6 +73,48 @@ public class PictDraw extends View {
         currentWidth = w;
     }
 
+    private boolean drawShape = false;
+    private int startx, starty, endx, endy;
+    private Rect rect;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.i("TouchEvent", "ACTION EVENT = " + event.getAction());
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+            rect = new Rect(x, y,x + 1, y + 1);
+
+
+
+
+            drawShape = true;
+            invalidate();
+
+            performClick();
+        }
+        else if (event.getAction() == MotionEvent.ACTION_UP){
+            rect = null;
+            drawShape = false;
+            invalidate();
+        }
+        else if (event.getAction() == MotionEvent.ACTION_MOVE){
+            //setStrokeThickness((int) event.getX());
+            rect.right = (int) event.getX();
+            rect.bottom = (int) event.getY();
+            invalidate();
+        }
+
+
+        return true;
+    }
+
+    @Override
+    public boolean performClick() {
+
+        return super.performClick();
+    }
 
     //update the size of the widget when measuring the thing
     @Override
