@@ -43,6 +43,10 @@ public class PictDraw extends View {
     private void setup(){
         rectangles = new Stack<>();
 
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(0xffffffff);
+        backgroundPaint.setStyle(Paint.Style.FILL);
+
         mainPaint = new Paint();
         mainPaint.setColor(0xff00ff00);
         mainPaint.setStyle(Paint.Style.FILL);
@@ -62,9 +66,8 @@ public class PictDraw extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        /*
-            canvas.drawLine(0, 0, currentWidth - 1, currentHeight - 1, mainPaint);
-            canvas.drawLine(0, currentHeight - 1, currentWidth - 1, 0, mainPaint);*/
+
+        canvas.drawPaint(backgroundPaint);
 
         //draw all the rectangles
         for (Rectangle r : rectangles) {
@@ -111,6 +114,7 @@ public class PictDraw extends View {
         return true;
     }
 
+    //not sure why we have to have this but android was yelling about it?
     @Override
     public boolean performClick() {
 
@@ -161,6 +165,7 @@ public class PictDraw extends View {
     }
 }
 
+//Basic wrapper class for Rect that lets it also hold a color
 
 class Rectangle{
     private Rect rect;
