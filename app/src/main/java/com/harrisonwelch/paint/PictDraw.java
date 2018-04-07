@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Random;
 import java.util.Stack;
 
 /**
@@ -20,6 +21,7 @@ public class PictDraw extends View {
     int currentHeight, currentWidth;        //height and width of our widget container
     Paint backgroundPaint;
     Paint mainPaint;
+    Random rand;
 
     Stack<Rectangle> rectangles;
 
@@ -41,6 +43,7 @@ public class PictDraw extends View {
 
     //do initialization of the Picture widget
     private void setup(){
+        rand = new Random();
         rectangles = new Stack<>();
 
         backgroundPaint = new Paint();
@@ -92,9 +95,13 @@ public class PictDraw extends View {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            Rectangle rect = new Rectangle(0xff00ff00, x, y, x+1, y+1);
+            int color = rand.nextInt(0x1000000) + 0xff000000;
+
+            Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
             currentlyDrawingRectangle = rect;
             rectangles.push(rect);
+
+
 
             invalidate();
 
