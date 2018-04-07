@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Stack;
+
 /**
  * Created by Suzanne on 4/5/2018.
  */
@@ -19,6 +21,7 @@ public class PictDraw extends View {
     Paint backgroundPaint;
     Paint mainPaint;
 
+    Stack<Rectangle> rectangles;
 
 
     public PictDraw(Context context) {
@@ -38,10 +41,12 @@ public class PictDraw extends View {
 
     //do initialization of the Picture widget
     private void setup(){
+        rectangles = new Stack<>();
+
         mainPaint = new Paint();
         mainPaint.setColor(0xff00ff00);
-        mainPaint.setStyle(Paint.Style.STROKE);
-        mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
+        mainPaint.setStyle(Paint.Style.FILL);
+        //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
 
     }
@@ -57,12 +62,14 @@ public class PictDraw extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        if (drawShape) {/*
+        /*
             canvas.drawLine(0, 0, currentWidth - 1, currentHeight - 1, mainPaint);
             canvas.drawLine(0, currentHeight - 1, currentWidth - 1, 0, mainPaint);*/
 
-            canvas.drawRect(rect, mainPaint);
+        //draw all the rectangles
+        for (Rectangle r : rectangles) {
+            mainPaint.setColor(r.getColor());
+            canvas.drawRect(r.getRect(), mainPaint);
         }
     }
 
@@ -73,36 +80,30 @@ public class PictDraw extends View {
         currentWidth = w;
     }
 
-    private boolean drawShape = false;
-    private int startx, starty, endx, endy;
-    private Rect rect;
+
+    //The rectangle the user is currently manipulating and 'drawing'
+    private Rectangle currentlyDrawingRectangle;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i("TouchEvent", "ACTION EVENT = " + event.getAction());
-
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            rect = new Rect(x, y,x + 1, y + 1);
+            Rectangle rect = new Rectangle(0xff00ff00, x, y, x+1, y+1);
+            currentlyDrawingRectangle = rect;
+            rectangles.push(rect);
 
-
-
-
-            drawShape = true;
             invalidate();
 
-            performClick();
+            performClick();         //needed by android studio to handle normal click event stuff
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
-            rect = null;
-            drawShape = false;
+            currentlyDrawingRectangle = null;
             invalidate();
         }
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            //setStrokeThickness((int) event.getX());
-            rect.right = (int) event.getX();
-            rect.bottom = (int) event.getY();
+            currentlyDrawingRectangle.setRight( (int) event.getX());
+            currentlyDrawingRectangle.setBottom( (int) event.getY());
             invalidate();
         }
 
@@ -157,5 +158,41 @@ public class PictDraw extends View {
 
         setMeasuredDimension(width, height);
 
+    }
+}
+
+
+class Rectangle{
+    private Rect rect;
+    private int color;
+
+    Rectangle(int color, int left, int top, int right, int bottom){
+        rect = new Rect(left, top, right, bottom);
+        this.color = color;
+    }
+
+    public void setRight(int right){
+        rect.right = right;
+    }
+
+    public void setBottom(int bottom){
+        rect.bottom = bottom;
+    }
+
+    public void setRightAndBottom(int right, int bottom){
+        rect.right = right;
+        rect.bottom = bottom;
+    }
+
+    public void setColor(int color){
+        this.color = color;
+    }
+
+    public int getColor(){
+        return color;
+    }
+
+    public Rect getRect(){
+        return rect;
     }
 }
