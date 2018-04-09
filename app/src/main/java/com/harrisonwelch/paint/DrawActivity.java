@@ -56,7 +56,7 @@ public class DrawActivity extends Activity {
     private void saveImage(){
         // TODO: implement
         Bitmap bitmapFromView = pictDraw.getBitmap();
-        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
+//        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
         MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
 
     }
@@ -74,6 +74,7 @@ public class DrawActivity extends Activity {
                     bfo.inJustDecodeBounds = true;
                     bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(dataUri), null, bfo);
                     bfo.inJustDecodeBounds = false;
+                    bfo.inMutable = true;
                     bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(dataUri), null, bfo);
 
                     Log.i(TAG_DRAW_ACT, "bitmap.getWidth() = " + bitmap.getWidth());

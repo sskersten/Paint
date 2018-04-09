@@ -138,6 +138,14 @@ public class PictDraw extends View{
         return true;
     }
 
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    public void setCanvas(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
     //not sure why we have to have this but android was yelling about it?
     @Override
     public boolean performClick() {
@@ -195,10 +203,17 @@ public class PictDraw extends View{
 //        mainPaint.setColor(Color.GREEN);
 //        mainPaint.setStrokeWidth(5);
         matrix = new Matrix();
-        canvas.drawBitmap(bitmap, matrix, mainPaint);
+        matrix.postScale(currentWidth/bitmap.getWidth(), currentHeight / bitmap.getHeight());
+//        bitmap.setHeight(currentHeight);
+//        bitmap.setWidth(currentWidth);
+        canvas.drawBitmap(bitmap,matrix ,mainPaint);
 
-        BitmapDrawable bd = new BitmapDrawable(getContext().getResources(), bitmap);
-        setBackground(bd);
+        Log.i(TAG_PICT_DRAW, "bitmap.getHeight() = " + bitmap.getHeight());
+        Log.i(TAG_PICT_DRAW, "bitmap.getWidth() = " + bitmap.getWidth());
+        Log.i(TAG_PICT_DRAW, "currentHeight = " + currentHeight);
+        Log.i(TAG_PICT_DRAW, "currentWidth = " + currentWidth);
+//        BitmapDrawable bd = new BitmapDrawable(getContext().getResources(), bitmap);
+//        setBackground(bd);
 
         Log.i(TAG_PICT_DRAW, " setting image");
 //        setImageBitmap(alteredBitmap);
