@@ -1,9 +1,13 @@
 package com.harrisonwelch.paint;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,11 +22,15 @@ import java.util.Stack;
  * Created by Suzanne on 4/5/2018.
  */
 
-public class PictDraw extends ImageView {
+public class PictDraw extends View{
+    private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
     int currentHeight, currentWidth;        //height and width of our widget container
     Paint backgroundPaint;
     Paint mainPaint;
     Random rand;
+    Canvas canvas;
+    Matrix matrix;
+    Bitmap bitmap;
 
     Stack<Rectangle> rectangles;
 
@@ -46,6 +54,7 @@ public class PictDraw extends ImageView {
     private void setup(){
         rand = new Random();
         rectangles = new Stack<>();
+        matrix = new Matrix();
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(0xffffffff);
@@ -73,11 +82,14 @@ public class PictDraw extends ImageView {
 
         canvas.drawPaint(backgroundPaint);
 
+        canvas.drawBitmap(bitmap, matrix, mainPaint);
+
         //draw all the rectangles
         for (Rectangle r : rectangles) {
             mainPaint.setColor(r.getColor());
             canvas.drawRect(r.getRect(), mainPaint);
         }
+
     }
 
     @Override
@@ -85,6 +97,9 @@ public class PictDraw extends ImageView {
         super.onSizeChanged(w, h, oldw, oldh);
         currentHeight = h;
         currentWidth = w;
+
+        bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
     }
 
 
@@ -172,7 +187,24 @@ public class PictDraw extends ImageView {
 
     }
 
-    public void setNewImage
+    public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
+        this.bitmap = bitmap;
+        canvas = new Canvas(alteredBitmap);
+//        mainPaint = new Paint();
+//        mainPaint.setColor(Color.GREEN);
+//        mainPaint.setStrokeWidth(5);
+        matrix = new Matrix();
+        canvas.drawBitmap(bitmap, matrix, mainPaint);
+
+        BitmapDrawable bd = new BitmapDrawable(getContext().getResources(), bitmap);
+        setBackground(bd);
+
+        Log.i(TAG_PICT_DRAW, " setting image");
+//        setImageBitmap(alteredBitmap);
+        invalidate();
+    }
+
+
 }
 
 //Basic wrapper class for Rect that lets it also hold a color

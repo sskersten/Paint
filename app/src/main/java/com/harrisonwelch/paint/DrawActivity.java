@@ -6,11 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import java.io.FileNotFoundException;
 
 public class DrawActivity extends Activity {
+    private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
 
     Bitmap bitmap;
@@ -66,9 +68,18 @@ public class DrawActivity extends Activity {
                     BitmapFactory.Options bfo = new BitmapFactory.Options();
                     bfo.inJustDecodeBounds = true;
                     bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(dataUri), null, bfo);
+                    bfo.inJustDecodeBounds = false;
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(dataUri), null, bfo);
+
+                    Log.i(TAG_DRAW_ACT, "bitmap.getWidth() = " + bitmap.getWidth());
+                    Log.i(TAG_DRAW_ACT, "bitmap.getHeight() = " + bitmap.getHeight());
 
                     alteredBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-                    pictDraw.setNew
+
+                    Log.i(TAG_DRAW_ACT, "alteredBitmap.getWidth() = " + alteredBitmap.getWidth());
+                    Log.i(TAG_DRAW_ACT, "alteredBitmap.getHeight() = " + alteredBitmap.getHeight());
+
+                    pictDraw.setNewImage(alteredBitmap, bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
