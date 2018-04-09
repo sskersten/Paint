@@ -89,6 +89,7 @@ public class PictDraw extends View{
             mainPaint.setColor(r.getColor());
             canvas.drawRect(r.getRect(), mainPaint);
         }
+        this.canvas = canvas;
 
     }
 
@@ -204,6 +205,9 @@ public class PictDraw extends View{
         invalidate();
     }
 
+    public Bitmap getBitmap(){
+        return this.bitmap;
+    }
 
 }
 

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 
@@ -54,6 +55,10 @@ public class DrawActivity extends Activity {
 
     private void saveImage(){
         // TODO: implement
+        Bitmap bitmapFromView = pictDraw.getBitmap();
+        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
+        MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
+
     }
 
     @Override
