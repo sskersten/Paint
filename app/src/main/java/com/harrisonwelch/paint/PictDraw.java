@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.Random;
 import java.util.Stack;
@@ -17,7 +18,7 @@ import java.util.Stack;
  * Created by Suzanne on 4/5/2018.
  */
 
-public class PictDraw extends View {
+public class PictDraw extends ImageView {
     int currentHeight, currentWidth;        //height and width of our widget container
     Paint backgroundPaint;
     Paint mainPaint;
@@ -170,6 +171,8 @@ public class PictDraw extends View {
         setMeasuredDimension(width, height);
 
     }
+
+    public void setNewImage
 }
 
 //Basic wrapper class for Rect that lets it also hold a color
