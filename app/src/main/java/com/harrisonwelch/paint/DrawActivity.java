@@ -9,10 +9,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioGroup;
 
 import java.io.FileNotFoundException;
 
-public class DrawActivity extends Activity {
+public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
 
@@ -43,6 +44,29 @@ public class DrawActivity extends Activity {
                 saveImage();
             }
         });
+
+
+        RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
+        radioGroup.setOnCheckedChangeListener(this);
+    }
+
+    //update the tool code in PictDraw based on what gets checked here.
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+        PictDraw pictDraw = findViewById(R.id.pict_draw);
+
+        //figure out what tool is checked and set the appropriate value in our tool list.
+        switch(checkedId){
+            case R.id.radioButton_brush:
+                pictDraw.setCurrentTool(PictDraw.TOOL_BRUSH);
+                break;
+            case R.id.radioButton_line:
+                pictDraw.setCurrentTool(PictDraw.TOOL_LINE);
+                break;
+            case R.id.radioButton_rectangle:
+                pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
+                break;
+        }
     }
 
     private void openImage(){
@@ -94,4 +118,6 @@ public class DrawActivity extends Activity {
         }
 
     }
+
+
 }

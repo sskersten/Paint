@@ -23,11 +23,27 @@ import java.util.Stack;
  */
 
 public class PictDraw extends View{
+    public static final int TOOL_BRUSH = 1;
+    public static final int TOOL_LINE = 2;
+    public static final int TOOL_RECTANGLE = 3;
+
+
+    private int currentTool;
+
+    public int getCurrentTool() {
+        return currentTool;
+    }
+
+    public void setCurrentTool(int currentTool) {
+        this.currentTool = currentTool;
+    }
+
+
     private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
-    int currentHeight, currentWidth;        //height and width of our widget container
-    Paint backgroundPaint;
-    Paint mainPaint;
-    Random rand;
+    private int currentHeight, currentWidth;        //height and width of our widget container
+    private Paint backgroundPaint;
+    private Paint mainPaint;
+    private Random rand;
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
@@ -109,6 +125,16 @@ public class PictDraw extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+       if (currentTool == TOOL_RECTANGLE){
+           onDrawRectangle(event);
+       }
+
+
+        return true;
+    }
+
+    //handles all of the drawing of rectangles at different stages of the touch
+    private void onDrawRectangle(MotionEvent event){
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
@@ -133,9 +159,6 @@ public class PictDraw extends View{
             currentlyDrawingRectangle.setBottom( (int) event.getY());
             invalidate();
         }
-
-
-        return true;
     }
 
     public Canvas getCanvas() {
