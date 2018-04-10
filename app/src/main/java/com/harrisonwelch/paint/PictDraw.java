@@ -43,12 +43,14 @@ public class PictDraw extends View{
     private int currentHeight, currentWidth;        //height and width of our widget container
     private Paint backgroundPaint;
     private Paint mainPaint;
+    private Paint linePaint;
     private Random rand;
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
 
     Stack<Rectangle> rectangles;
+    Stack<Line> lines;
 
 
     public PictDraw(Context context) {
@@ -70,6 +72,7 @@ public class PictDraw extends View{
     private void setup(){
         rand = new Random();
         rectangles = new Stack<>();
+        lines = new Stack<>();
         matrix = new Matrix();
 
         backgroundPaint = new Paint();
@@ -81,6 +84,10 @@ public class PictDraw extends View{
         mainPaint.setStyle(Paint.Style.FILL);
         //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
+
+        linePaint = new Paint();
+        linePaint.setStyle(Paint.Style.FILL);
+        linePaint.setStrokeWidth(Helpers.dpToPx(5, getContext()));
 
     }
 
@@ -100,11 +107,19 @@ public class PictDraw extends View{
 
         canvas.drawBitmap(bitmap, matrix, mainPaint);
 
+
+
         //draw all the rectangles
         for (Rectangle r : rectangles) {
             mainPaint.setColor(r.getColor());
             canvas.drawRect(r.getRect(), mainPaint);
         }
+
+        for (Line l : lines) {
+            linePaint.setColor(l.color);
+            canvas.drawLine(l.startx, l.starty, l.endx, l.endy, linePaint);
+        }
+
         this.canvas = canvas;
 
     }
@@ -128,9 +143,44 @@ public class PictDraw extends View{
        if (currentTool == TOOL_RECTANGLE){
            onDrawRectangle(event);
        }
+       if (currentTool == TOOL_LINE){
+           onDrawLine(event);
+       }
 
 
         return true;
+    }
+
+    private Line currentlyDrawingLine;
+    //handles all of the drawing of rectangles at different stages of the touch
+    private void onDrawLine(MotionEvent event){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+            int color = rand.nextInt(0x1000000) + 0xff000000;
+
+            Line line = new Line();
+            line.startx = x;
+            line.starty = y;
+            line.endx = x + 1;
+            line.endy = y + 1;
+            line.color = color;
+            currentlyDrawingLine = line;
+            lines.push(line);
+
+            invalidate();
+
+            performClick();         //needed by android studio to handle normal click event stuff
+        }
+        else if (event.getAction() == MotionEvent.ACTION_UP){
+            currentlyDrawingLine = null;
+            invalidate();
+        }
+        else if (event.getAction() == MotionEvent.ACTION_MOVE){
+            currentlyDrawingLine.endx = ( (int) event.getX());
+            currentlyDrawingLine.endy = ( (int) event.getY());
+            invalidate();
+        }
     }
 
     //handles all of the drawing of rectangles at different stages of the touch
@@ -284,4 +334,12 @@ class Rectangle{
     public Rect getRect(){
         return rect;
     }
+}
+
+class Line{
+    public int startx;
+    public int starty;
+    public int endx;
+    public int endy;
+    public int color;
 }
