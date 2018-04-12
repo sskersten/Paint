@@ -45,6 +45,7 @@ public class PictDraw extends View{
     private Paint mainPaint;
     private Paint linePaint;
     private Random rand;
+    private int color;
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
@@ -96,7 +97,7 @@ public class PictDraw extends View{
     //Sets the stroke to a passed in dp value
     // after converting it to px
     public void setStrokeThickness(int dpSize){
-        mainPaint.setStrokeWidth(Helpers.dpToPx(dpSize, getContext()));
+        linePaint.setStrokeWidth(Helpers.dpToPx(dpSize, getContext()));
         invalidate();
     }
 
@@ -170,7 +171,7 @@ public class PictDraw extends View{
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            int color = rand.nextInt(0x1000000) + 0xff000000;
+            //int color = rand.nextInt(0x1000000) + 0xff000000;
 
             Line line = new Line();
             line.startx = x;
@@ -202,7 +203,7 @@ public class PictDraw extends View{
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            int color = rand.nextInt(0x1000000) + 0xff000000;
+            //int color = rand.nextInt(0x1000000) + 0xff000000;
 
             Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
             currentlyDrawingRectangle = rect;
@@ -312,6 +313,13 @@ public class PictDraw extends View{
         return this.bitmap;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
 }
 
 //lets us keep all the shapes in a nice vector to draw in the same order they were placed

@@ -1,14 +1,19 @@
 package com.harrisonwelch.paint;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import java.io.FileNotFoundException;
@@ -21,6 +26,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     Bitmap alteredBitmap;
 
     PictDraw pictDraw;
+    private View alertView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,10 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         setContentView(R.layout.activity_draw);
 
         pictDraw = findViewById(R.id.pict_draw);
+
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        alertView = inflater.inflate(R.layout.color_alert, null);
+
 
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +77,27 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
                 break;
         }
+    }
+
+    private void openColorDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
+
+        builder.setView(alertView);
+        builder.setTitle("Choose a color");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                EditText r = findViewById(R.id.editText_red);
+                EditText g = findViewById(R.id.editText_green);
+                EditText b = findViewById(R.id.editText_blue);
+
+                int color = Color.rgb(Integer.parseInt(r.getText().toString()),
+                        Integer.parseInt(g.getText().toString()),
+                        Integer.parseInt(b.getText().toString()));
+
+                pictDraw.setColor(color);
+            }
+        });
     }
 
     private void openImage(){
