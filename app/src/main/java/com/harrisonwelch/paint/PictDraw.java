@@ -51,6 +51,7 @@ public class PictDraw extends View{
 
     Stack<Rectangle> rectangles;
     Stack<Line> lines;
+    Stack<Shape> shapes;
 
 
     public PictDraw(Context context) {
@@ -73,6 +74,7 @@ public class PictDraw extends View{
         rand = new Random();
         rectangles = new Stack<>();
         lines = new Stack<>();
+        shapes = new Stack<>();
         matrix = new Matrix();
 
         backgroundPaint = new Paint();
@@ -108,17 +110,28 @@ public class PictDraw extends View{
         canvas.drawBitmap(bitmap, matrix, mainPaint);
 
 
+        for (Shape s : shapes){
 
+            if (s.getPaintToUse() == Shape.PAINT_FILL) {
+                mainPaint.setColor(s.getColor());
+                s.draw(canvas, mainPaint);
+            } else if (s.getPaintToUse() == Shape.PAINT_STROKE) {
+                linePaint.setColor(s.getColor());
+                s.draw(canvas, linePaint);
+            }
+        }
+
+        /*
         //draw all the rectangles
         for (Rectangle r : rectangles) {
             mainPaint.setColor(r.getColor());
-            canvas.drawRect(r.getRect(), mainPaint);
+            r.draw(canvas, mainPaint);
         }
 
         for (Line l : lines) {
             linePaint.setColor(l.color);
             canvas.drawLine(l.startx, l.starty, l.endx, l.endy, linePaint);
-        }
+        }*/
 
         this.canvas = canvas;
 
@@ -167,6 +180,7 @@ public class PictDraw extends View{
             line.color = color;
             currentlyDrawingLine = line;
             lines.push(line);
+            shapes.push(line);
 
             invalidate();
 
@@ -193,6 +207,7 @@ public class PictDraw extends View{
             Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
             currentlyDrawingRectangle = rect;
             rectangles.push(rect);
+            shapes.push(rect);
 
 
 
@@ -299,15 +314,29 @@ public class PictDraw extends View{
 
 }
 
+//lets us keep all the shapes in a nice vector to draw in the same order they were placed
+interface Shape{
+    void draw(Canvas canvas, Paint paint);
+    int getColor();
+
+    int PAINT_FILL = 1;
+    int PAINT_STROKE = 0;
+    int getPaintToUse();
+}
+
 //Basic wrapper class for Rect that lets it also hold a color
 
-class Rectangle{
+class Rectangle implements Shape{
     private Rect rect;
     private int color;
 
     Rectangle(int color, int left, int top, int right, int bottom){
         rect = new Rect(left, top, right, bottom);
         this.color = color;
+    }
+
+    public void draw(Canvas canvas, Paint paint){
+        canvas.drawRect(getRect(), paint);
     }
 
     public void setRight(int right){
@@ -334,12 +363,30 @@ class Rectangle{
     public Rect getRect(){
         return rect;
     }
+
+    @Override
+    public int getPaintToUse() {
+        return PAINT_FILL;
+    }
 }
 
-class Line{
+class Line implements Shape{
     public int startx;
     public int starty;
     public int endx;
     public int endy;
     public int color;
+
+    public void draw(Canvas canvas, Paint paint){
+        canvas.drawLine(startx, starty, endx, endy, paint);
+    }
+
+    public int getColor(){
+        return color;
+    }
+
+    @Override
+    public int getPaintToUse() {
+        return PAINT_STROKE;
+    }
 }
