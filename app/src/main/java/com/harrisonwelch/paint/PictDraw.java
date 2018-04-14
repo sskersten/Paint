@@ -30,7 +30,7 @@ public class PictDraw extends View{
     public static final int TOOL_RECTANGLE = 3;
 
 
-    private int currentTool;
+    private int currentTool = TOOL_BRUSH;
 
     public int getCurrentTool() {
         return currentTool;
@@ -53,8 +53,6 @@ public class PictDraw extends View{
     Bitmap bitmap;
     Path path;
 
-    Stack<Rectangle> rectangles;
-    Stack<Line> lines;
     Stack<Shape> shapes;
     ArrayList<Path> paths;
 
@@ -80,8 +78,6 @@ public class PictDraw extends View{
     private void setup(){
 //        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         rand = new Random();
-        rectangles = new Stack<>();
-        lines = new Stack<>();
         shapes = new Stack<>();
         matrix = new Matrix();
         paths = new ArrayList<>();
@@ -90,8 +86,9 @@ public class PictDraw extends View{
         backgroundPaint.setColor(0xffffffff);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
+        color = 0xff00ff00;
         mainPaint = new Paint();
-        mainPaint.setColor(0xff00ff00);
+        mainPaint.setColor(color);
         mainPaint.setStyle(Paint.Style.FILL);
         //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
@@ -132,17 +129,6 @@ public class PictDraw extends View{
             }
         }
 
-        /*
-        //draw all the rectangles
-        for (Rectangle r : rectangles) {
-            mainPaint.setColor(r.getColor());
-            r.draw(canvas, mainPaint);
-        }
-
-        for (Line l : lines) {
-            linePaint.setColor(l.color);
-            canvas.drawLine(l.startx, l.starty, l.endx, l.endy, linePaint);
-        }*/
 
         canvas.drawPath(path, linePaint);
 
@@ -171,19 +157,21 @@ public class PictDraw extends View{
 
         Log.i(TAG_PICT_DRAW, "x = " + x + ", y = " + y);
 
-        switch(event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                startPath(x,y);
-                invalidate();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                continuePath(x,y);
-                invalidate();
-                break;
-            case MotionEvent.ACTION_UP:
-                stopPath(x,y);
-                invalidate();
-                break;
+        if (currentTool == TOOL_BRUSH) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    startPath(x, y);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    continuePath(x, y);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    stopPath(x, y);
+                    invalidate();
+                    break;
+            }
         }
 
         if (currentTool == TOOL_RECTANGLE){
@@ -212,7 +200,6 @@ public class PictDraw extends View{
             line.endy = y + 1;
             line.color = color;
             currentlyDrawingLine = line;
-            lines.push(line);
             shapes.push(line);
 
             invalidate();
@@ -238,8 +225,8 @@ public class PictDraw extends View{
             //int color = rand.nextInt(0x1000000) + 0xff000000;
 
             Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
+            rect.setColor(color);
             currentlyDrawingRectangle = rect;
-            rectangles.push(rect);
             shapes.push(rect);
 
 
