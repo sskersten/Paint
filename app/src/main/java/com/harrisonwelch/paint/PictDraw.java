@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
@@ -49,11 +51,15 @@ public class PictDraw extends View{
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
+    Path path;
 
     Stack<Rectangle> rectangles;
     Stack<Line> lines;
     Stack<Shape> shapes;
+    ArrayList<Path> paths;
 
+    float currX; // current path position
+    float currY; // current path position
 
     public PictDraw(Context context) {
         super(context);
@@ -72,11 +78,13 @@ public class PictDraw extends View{
 
     //do initialization of the Picture widget
     private void setup(){
+//        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         rand = new Random();
         rectangles = new Stack<>();
         lines = new Stack<>();
         shapes = new Stack<>();
         matrix = new Matrix();
+        paths = new ArrayList<>();
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(0xffffffff);
@@ -87,10 +95,12 @@ public class PictDraw extends View{
         mainPaint.setStyle(Paint.Style.FILL);
         //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
-
         linePaint = new Paint();
+        linePaint.setColor(0xff00ff00);
         linePaint.setStyle(Paint.Style.FILL);
         linePaint.setStrokeWidth(Helpers.dpToPx(5, getContext()));
+
+        path = new Path();
 
     }
 
@@ -109,7 +119,6 @@ public class PictDraw extends View{
         canvas.drawPaint(backgroundPaint);
 
         canvas.drawBitmap(bitmap, matrix, mainPaint);
-
 
         for (Shape s : shapes){
 
@@ -134,6 +143,15 @@ public class PictDraw extends View{
             canvas.drawLine(l.startx, l.starty, l.endx, l.endy, linePaint);
         }*/
 
+        canvas.drawPath(path, linePaint);
+
+        // draw paths
+
+        for( Path p : paths){
+            canvas.drawPath(p, linePaint);
+            Log.i(TAG_PICT_DRAW, "path drawn");
+        }
+
         this.canvas = canvas;
 
     }
@@ -154,12 +172,32 @@ public class PictDraw extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-       if (currentTool == TOOL_RECTANGLE){
+        float x = event.getX();
+        float y = event.getY();
+
+        Log.i(TAG_PICT_DRAW, "x = " + x + ", y = " + y);
+
+        switch(event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                startPath(x,y);
+                invalidate();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                continuePath(x,y);
+                invalidate();
+                break;
+            case MotionEvent.ACTION_UP:
+                stopPath(x,y);
+                invalidate();
+                break;
+        }
+
+        if (currentTool == TOOL_RECTANGLE){
            onDrawRectangle(event);
-       }
-       if (currentTool == TOOL_LINE){
+        }
+        if (currentTool == TOOL_LINE){
            onDrawLine(event);
-       }
+        }
 
 
         return true;
@@ -319,6 +357,31 @@ public class PictDraw extends View{
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public void startPath(float x, float y){
+        path.reset();
+        path.moveTo(x,y);
+        currX = x;
+        currY = y;
+    }
+
+    public void continuePath(float x, float y){
+        if ( Math.abs(currX - x) >= 4 || Math.abs(currY - y) >= 4 ){
+            path.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
+            currX = x;
+            currY = y;
+        }
+    }
+
+    public void stopPath(float x, float y){
+        path.lineTo(x,y);
+        currX = x;
+        currY = y;
+//        canvas.drawPath(path, linePaint);
+        paths.add(path);
+        path.reset();
+        invalidate();
     }
 }
 
