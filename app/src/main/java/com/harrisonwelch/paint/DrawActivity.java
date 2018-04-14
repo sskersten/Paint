@@ -120,7 +120,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         Bitmap bitmapFromView = pictDraw.getDrawingCache();
 //        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
         String filename = "LOOK_HERE";
-        String fileContents = "file";
+        String fileContents = "image.png";
         File dir = getApplicationContext().getDir(filename, Context.MODE_PRIVATE);
         File file = new File(dir, fileContents);
         FileOutputStream fos = null;
