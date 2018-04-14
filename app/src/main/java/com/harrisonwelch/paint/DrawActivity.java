@@ -10,15 +10,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -140,7 +137,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         }
 //        MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
 
-        Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG);
+        Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
 
     }
 
