@@ -57,6 +57,7 @@ public class DrawActivity extends Activity {
         // TODO: implement
         Bitmap bitmapFromView = pictDraw.getBitmap();
 //        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
+
         MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
 
     }
