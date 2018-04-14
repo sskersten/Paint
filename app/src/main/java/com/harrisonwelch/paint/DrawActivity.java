@@ -1,5 +1,6 @@
 package com.harrisonwelch.paint;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +22,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
+
+    String filename = "LOOK_HERE";
+    String fileContents = "image.png";
+    File dir;
+    File file;
+    FileOutputStream fos;
 
     Bitmap bitmap;
     Bitmap alteredBitmap;
@@ -56,6 +65,13 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             public void onClick(View v) {
                 // save the edited image to photos or elsewhere
                 saveImage();
+            }
+        });
+
+        findViewById(R.id.button_email_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emailImage();
             }
         });
 
@@ -116,19 +132,17 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         // TODO: implement
         Bitmap bitmapFromView = pictDraw.getDrawingCache();
 //        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
-        String filename = "LOOK_HERE";
-        String fileContents = "image.png";
-        File dir = getApplicationContext().getDir(filename, Context.MODE_PRIVATE);
-        File file = new File(dir, fileContents);
-        FileOutputStream fos = null;
+        this.dir = getApplicationContext().getDir(filename, Context.MODE_PRIVATE);
+        this.file = new File(dir, fileContents);
         try{
-            fos = new FileOutputStream(file);
-            bitmapFromView.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            this.fos = new FileOutputStream(this.file);
+            bitmapFromView.compress(Bitmap.CompressFormat.PNG, 100, this.fos);
         } catch (FileNotFoundException e){
             e.printStackTrace();
         } finally {
             try {
                 if ( fos != null) {
+                    fos.flush();
                     fos.close();
                 }
             } catch (IOException e){
@@ -138,6 +152,20 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 //        MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
 
         Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
+
+    }
+
+    @SuppressLint("SetWorldReadable")
+    public void emailImage(){
+        saveImage();
+        if (this.file != null) {
+            this.file.setReadable(true, false);
+            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(this.file));
+            intent.setType("image/png");
+            startActivity(intent);
+        }
 
     }
 

@@ -40,6 +40,15 @@
         app:layout_constraintStart_toEndOf="@+id/button_open_image"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/button_email_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Email Image"
+        app:layout_constraintStart_toEndOf="@+id/button_save_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <RadioGroup
         android:id="@+id/radioGroup_tools"
         android:layout_width="0dp"
