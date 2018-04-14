@@ -1,8 +1,10 @@
 package com.harrisonwelch.paint;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.widget.EditText;
 import android.widget.Toast;
 
 /**
@@ -30,5 +32,12 @@ public class Helpers {
     public static float spToPx(int spSize, Context context){
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, spSize, dm);
+    }
+
+    //takes in three edit texts and gives back a color based on the values in there
+    public static int rgbToHex(EditText r, EditText g, EditText b){
+        return Color.rgb(Integer.parseInt(r.getText().toString()),
+                Integer.parseInt(g.getText().toString()),
+                Integer.parseInt(b.getText().toString()));
     }
 }

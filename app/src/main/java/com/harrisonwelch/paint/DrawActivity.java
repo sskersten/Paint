@@ -118,8 +118,9 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         final EditText r = alertView.findViewById(R.id.editText_red);
         final EditText g = alertView.findViewById(R.id.editText_green);
         final EditText b = alertView.findViewById(R.id.editText_blue);
+        final View colorShow = alertView.findViewById(R.id.colorShow);
 
-        setupSeekBars(alertView, r, g, b);
+        setupSeekBars(alertView, r, g, b, colorShow);
 
         builder.setView(alertView);
         builder.setTitle("Choose a color");
@@ -127,38 +128,34 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
-                int color = Color.rgb(Integer.parseInt(r.getText().toString()),
-                        Integer.parseInt(g.getText().toString()),
-                        Integer.parseInt(b.getText().toString()));
-
+                int color = Helpers.rgbToHex(r, g, b);
                 pictDraw.setColor(color);
             }
         });
 
-
-
-
-
         AlertDialog alert = builder.create();
 
-
-        //FrameLayout f1 = (FrameLayout) alert.findViewById(android.R.id.body);
-        //f1.addView(alertView);
 
         return alert;
     }
 
-    private void setupSeekBars(View alertView, EditText r, EditText g, EditText b){
+    private void setupSeekBars(View alertView, final EditText r, final EditText g, final EditText b, final View colorShow){
         class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
             EditText e;
 
+            private void updateColorShow(){
+                colorShow.setBackgroundColor(Helpers.rgbToHex(r, g, b));
+            }
+
             public SeekBarListener(EditText e) {
                 this.e = e;
+
             }
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int value, boolean b) {
                 e.setText(Integer.toString(value));
+                updateColorShow();
             }
 
             @Override
@@ -176,6 +173,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         ((SeekBar)alertView.findViewById(R.id.seekBar_g)).setOnSeekBarChangeListener(new SeekBarListener(g));
         ((SeekBar)alertView.findViewById(R.id.seekBar_b)).setOnSeekBarChangeListener(new SeekBarListener(b));
     }
+
 
     private void openImage(){
         // TODO: implement
