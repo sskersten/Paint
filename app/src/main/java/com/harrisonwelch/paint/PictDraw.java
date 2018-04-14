@@ -148,7 +148,8 @@ public class PictDraw extends View{
 
         // draw paths
 
-        for( Path p : paths){
+        for(int i = 0; i < paths.size(); i++ ){
+            Path p = paths.get(i);
             canvas.drawPath(p, linePaint);
             Log.i(TAG_PICT_DRAW, "path drawn");
         }
@@ -369,8 +370,8 @@ public class PictDraw extends View{
 
     public void continuePath(float x, float y){
         if ( Math.abs(currX - x) >= 4 || Math.abs(currY - y) >= 4 ){
-//            path.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
-            path.lineTo(x,y);
+            path.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
+//            path.lineTo(x,y);
             currX = x;
             currY = y;
         }

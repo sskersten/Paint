@@ -2,6 +2,7 @@ package com.harrisonwelch.paint;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,14 +10,19 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
@@ -34,6 +40,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         setContentView(R.layout.activity_draw);
 
         pictDraw = findViewById(R.id.pict_draw);
+        pictDraw.setDrawingCacheEnabled(true);
 
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         alertView = inflater.inflate(R.layout.color_alert, null);
@@ -110,10 +117,30 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
     private void saveImage(){
         // TODO: implement
-        Bitmap bitmapFromView = pictDraw.getBitmap();
+        Bitmap bitmapFromView = pictDraw.getDrawingCache();
 //        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
+        String filename = "LOOK_HERE";
+        String fileContents = "file";
+        File dir = getApplicationContext().getDir(filename, Context.MODE_PRIVATE);
+        File file = new File(dir, fileContents);
+        FileOutputStream fos = null;
+        try{
+            fos = new FileOutputStream(file);
+            bitmapFromView.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+        } finally {
+            try {
+                if ( fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+//        MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
 
-        MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
+        Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG);
 
     }
 
