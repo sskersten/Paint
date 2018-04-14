@@ -23,16 +23,36 @@ import java.util.Stack;
  */
 
 public class PictDraw extends View{
+    public static final int TOOL_BRUSH = 1;
+    public static final int TOOL_LINE = 2;
+    public static final int TOOL_RECTANGLE = 3;
+
+
+    private int currentTool;
+
+    public int getCurrentTool() {
+        return currentTool;
+    }
+
+    public void setCurrentTool(int currentTool) {
+        this.currentTool = currentTool;
+    }
+
+
     private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
-    int currentHeight, currentWidth;        //height and width of our widget container
-    Paint backgroundPaint;
-    Paint mainPaint;
-    Random rand;
+    private int currentHeight, currentWidth;        //height and width of our widget container
+    private Paint backgroundPaint;
+    private Paint mainPaint;
+    private Paint linePaint;
+    private Random rand;
+    private int color;
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
 
     Stack<Rectangle> rectangles;
+    Stack<Line> lines;
+    Stack<Shape> shapes;
 
 
     public PictDraw(Context context) {
@@ -54,6 +74,8 @@ public class PictDraw extends View{
     private void setup(){
         rand = new Random();
         rectangles = new Stack<>();
+        lines = new Stack<>();
+        shapes = new Stack<>();
         matrix = new Matrix();
 
         backgroundPaint = new Paint();
@@ -66,12 +88,16 @@ public class PictDraw extends View{
         //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
 
+        linePaint = new Paint();
+        linePaint.setStyle(Paint.Style.FILL);
+        linePaint.setStrokeWidth(Helpers.dpToPx(5, getContext()));
+
     }
 
     //Sets the stroke to a passed in dp value
     // after converting it to px
     public void setStrokeThickness(int dpSize){
-        mainPaint.setStrokeWidth(Helpers.dpToPx(dpSize, getContext()));
+        linePaint.setStrokeWidth(Helpers.dpToPx(dpSize, getContext()));
         invalidate();
     }
 
@@ -84,11 +110,30 @@ public class PictDraw extends View{
 
         canvas.drawBitmap(bitmap, matrix, mainPaint);
 
+
+        for (Shape s : shapes){
+
+            if (s.getPaintToUse() == Shape.PAINT_FILL) {
+                mainPaint.setColor(s.getColor());
+                s.draw(canvas, mainPaint);
+            } else if (s.getPaintToUse() == Shape.PAINT_STROKE) {
+                linePaint.setColor(s.getColor());
+                s.draw(canvas, linePaint);
+            }
+        }
+
+        /*
         //draw all the rectangles
         for (Rectangle r : rectangles) {
             mainPaint.setColor(r.getColor());
-            canvas.drawRect(r.getRect(), mainPaint);
+            r.draw(canvas, mainPaint);
         }
+
+        for (Line l : lines) {
+            linePaint.setColor(l.color);
+            canvas.drawLine(l.startx, l.starty, l.endx, l.endy, linePaint);
+        }*/
+
         this.canvas = canvas;
 
     }
@@ -109,14 +154,61 @@ public class PictDraw extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+       if (currentTool == TOOL_RECTANGLE){
+           onDrawRectangle(event);
+       }
+       if (currentTool == TOOL_LINE){
+           onDrawLine(event);
+       }
+
+
+        return true;
+    }
+
+    private Line currentlyDrawingLine;
+    //handles all of the drawing of rectangles at different stages of the touch
+    private void onDrawLine(MotionEvent event){
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            int color = rand.nextInt(0x1000000) + 0xff000000;
+            //int color = rand.nextInt(0x1000000) + 0xff000000;
+
+            Line line = new Line();
+            line.startx = x;
+            line.starty = y;
+            line.endx = x + 1;
+            line.endy = y + 1;
+            line.color = color;
+            currentlyDrawingLine = line;
+            lines.push(line);
+            shapes.push(line);
+
+            invalidate();
+
+            performClick();         //needed by android studio to handle normal click event stuff
+        }
+        else if (event.getAction() == MotionEvent.ACTION_UP){
+            currentlyDrawingLine = null;
+            invalidate();
+        }
+        else if (event.getAction() == MotionEvent.ACTION_MOVE){
+            currentlyDrawingLine.endx = ( (int) event.getX());
+            currentlyDrawingLine.endy = ( (int) event.getY());
+            invalidate();
+        }
+    }
+
+    //handles all of the drawing of rectangles at different stages of the touch
+    private void onDrawRectangle(MotionEvent event){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+            //int color = rand.nextInt(0x1000000) + 0xff000000;
 
             Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
             currentlyDrawingRectangle = rect;
             rectangles.push(rect);
+            shapes.push(rect);
 
 
 
@@ -133,9 +225,6 @@ public class PictDraw extends View{
             currentlyDrawingRectangle.setBottom( (int) event.getY());
             invalidate();
         }
-
-
-        return true;
     }
 
     public Canvas getCanvas() {
@@ -224,17 +313,38 @@ public class PictDraw extends View{
         return this.bitmap;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+}
+
+//lets us keep all the shapes in a nice vector to draw in the same order they were placed
+interface Shape{
+    void draw(Canvas canvas, Paint paint);
+    int getColor();
+
+    int PAINT_FILL = 1;
+    int PAINT_STROKE = 0;
+    int getPaintToUse();
 }
 
 //Basic wrapper class for Rect that lets it also hold a color
 
-class Rectangle{
+class Rectangle implements Shape{
     private Rect rect;
     private int color;
 
     Rectangle(int color, int left, int top, int right, int bottom){
         rect = new Rect(left, top, right, bottom);
         this.color = color;
+    }
+
+    public void draw(Canvas canvas, Paint paint){
+        canvas.drawRect(getRect(), paint);
     }
 
     public void setRight(int right){
@@ -260,5 +370,31 @@ class Rectangle{
 
     public Rect getRect(){
         return rect;
+    }
+
+    @Override
+    public int getPaintToUse() {
+        return PAINT_FILL;
+    }
+}
+
+class Line implements Shape{
+    public int startx;
+    public int starty;
+    public int endx;
+    public int endy;
+    public int color;
+
+    public void draw(Canvas canvas, Paint paint){
+        canvas.drawLine(startx, starty, endx, endy, paint);
+    }
+
+    public int getColor(){
+        return color;
+    }
+
+    @Override
+    public int getPaintToUse() {
+        return PAINT_STROKE;
     }
 }

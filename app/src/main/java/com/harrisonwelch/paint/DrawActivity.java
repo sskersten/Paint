@@ -1,18 +1,24 @@
 package com.harrisonwelch.paint;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 
 import java.io.FileNotFoundException;
 
-public class DrawActivity extends Activity {
+public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
 
@@ -20,6 +26,7 @@ public class DrawActivity extends Activity {
     Bitmap alteredBitmap;
 
     PictDraw pictDraw;
+    private View alertView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +34,10 @@ public class DrawActivity extends Activity {
         setContentView(R.layout.activity_draw);
 
         pictDraw = findViewById(R.id.pict_draw);
+
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        alertView = inflater.inflate(R.layout.color_alert, null);
+
 
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,6 +52,50 @@ public class DrawActivity extends Activity {
             public void onClick(View v) {
                 // save the edited image to photos or elsewhere
                 saveImage();
+            }
+        });
+
+
+        RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
+        radioGroup.setOnCheckedChangeListener(this);
+    }
+
+    //update the tool code in PictDraw based on what gets checked here.
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+        PictDraw pictDraw = findViewById(R.id.pict_draw);
+
+        //figure out what tool is checked and set the appropriate value in our tool list.
+        switch(checkedId){
+            case R.id.radioButton_brush:
+                pictDraw.setCurrentTool(PictDraw.TOOL_BRUSH);
+                break;
+            case R.id.radioButton_line:
+                pictDraw.setCurrentTool(PictDraw.TOOL_LINE);
+                break;
+            case R.id.radioButton_rectangle:
+                pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
+                break;
+        }
+    }
+
+    private void openColorDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
+
+        builder.setView(alertView);
+        builder.setTitle("Choose a color");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                EditText r = findViewById(R.id.editText_red);
+                EditText g = findViewById(R.id.editText_green);
+                EditText b = findViewById(R.id.editText_blue);
+
+                int color = Color.rgb(Integer.parseInt(r.getText().toString()),
+                        Integer.parseInt(g.getText().toString()),
+                        Integer.parseInt(b.getText().toString()));
+
+                pictDraw.setColor(color);
             }
         });
     }
@@ -95,4 +150,6 @@ public class DrawActivity extends Activity {
         }
 
     }
+
+
 }
