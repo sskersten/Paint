@@ -146,14 +146,6 @@ public class PictDraw extends View{
 
         canvas.drawPath(path, linePaint);
 
-        // draw paths
-
-        for(int i = 0; i < paths.size(); i++ ){
-            Path p = paths.get(i);
-            canvas.drawPath(p, linePaint);
-            Log.i(TAG_PICT_DRAW, "path drawn");
-        }
-
         this.canvas = canvas;
 
     }
@@ -384,6 +376,11 @@ public class PictDraw extends View{
 //        this.canvas.drawPath(path, linePaint);
         paths.add(path);
 //        path.reset();
+    }
+
+    public void clear(){
+        path.reset();
+        invalidate();
     }
 }
 
