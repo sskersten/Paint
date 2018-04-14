@@ -3,6 +3,7 @@ package com.harrisonwelch.paint;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,7 +17,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +41,6 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     Bitmap alteredBitmap;
 
     PictDraw pictDraw;
-    private View alertView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +50,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         pictDraw = findViewById(R.id.pict_draw);
         pictDraw.setDrawingCacheEnabled(true);
 
-        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-        alertView = inflater.inflate(R.layout.color_alert, null);
+
 
 
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
@@ -72,6 +73,15 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             @Override
             public void onClick(View v) {
                 emailImage();
+            }
+        });
+
+
+        final AlertDialog alert = setupColorDialog();
+        findViewById(R.id.button_color).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alert.show();
             }
         });
 
@@ -99,17 +109,23 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         }
     }
 
-    private void openColorDialog(){
+    private AlertDialog setupColorDialog(){
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        View alertView = inflater.inflate(R.layout.color_alert, null);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
+
+        final EditText r = alertView.findViewById(R.id.editText_red);
+        final EditText g = alertView.findViewById(R.id.editText_green);
+        final EditText b = alertView.findViewById(R.id.editText_blue);
+
+        setupSeekBars(alertView, r, g, b);
 
         builder.setView(alertView);
         builder.setTitle("Choose a color");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                EditText r = findViewById(R.id.editText_red);
-                EditText g = findViewById(R.id.editText_green);
-                EditText b = findViewById(R.id.editText_blue);
 
                 int color = Color.rgb(Integer.parseInt(r.getText().toString()),
                         Integer.parseInt(g.getText().toString()),
@@ -118,6 +134,47 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setColor(color);
             }
         });
+
+
+
+
+
+        AlertDialog alert = builder.create();
+
+
+        //FrameLayout f1 = (FrameLayout) alert.findViewById(android.R.id.body);
+        //f1.addView(alertView);
+
+        return alert;
+    }
+
+    private void setupSeekBars(View alertView, EditText r, EditText g, EditText b){
+        class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
+            EditText e;
+
+            public SeekBarListener(EditText e) {
+                this.e = e;
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int value, boolean b) {
+                e.setText(Integer.toString(value));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        };
+
+        ((SeekBar)alertView.findViewById(R.id.seekBar_r)).setOnSeekBarChangeListener(new SeekBarListener(r));
+        ((SeekBar)alertView.findViewById(R.id.seekBar_g)).setOnSeekBarChangeListener(new SeekBarListener(g));
+        ((SeekBar)alertView.findViewById(R.id.seekBar_b)).setOnSeekBarChangeListener(new SeekBarListener(b));
     }
 
     private void openImage(){

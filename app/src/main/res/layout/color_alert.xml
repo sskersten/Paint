@@ -28,10 +28,11 @@
             android:singleLine="true" />
 
         <SeekBar
-            android:id="@+id/seekBar4"
+            android:id="@+id/seekBar_r"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="255"/>
     </LinearLayout>
 
     <LinearLayout
@@ -57,10 +58,11 @@
             android:singleLine="true" />
 
         <SeekBar
-            android:id="@+id/seekBar5"
+            android:id="@+id/seekBar_g"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="255"/>
 
     </LinearLayout>
 
@@ -86,10 +88,11 @@
             android:singleLine="true" />
 
         <SeekBar
-            android:id="@+id/seekBar6"
+            android:id="@+id/seekBar_b"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="255"/>
 
     </LinearLayout>
 
