@@ -13,7 +13,11 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -120,13 +124,17 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         final EditText b = alertView.findViewById(R.id.editText_blue);
         final View colorShow = alertView.findViewById(R.id.colorShow);
 
+        setupEditTexts(r, g, b, colorShow);
         setupSeekBars(alertView, r, g, b, colorShow);
+
 
         builder.setView(alertView);
         builder.setTitle("Choose a color");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
+
 
                 int color = Helpers.rgbToHex(r, g, b);
                 pictDraw.setColor(color);
@@ -137,6 +145,54 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
 
         return alert;
+    }
+
+    private void setupEditTexts(final EditText r, final EditText g, final EditText b, final View colorShow){
+        class TextListener implements TextWatcher {
+            EditText e;
+
+            private void updateColorShow(){
+                colorShow.setBackgroundColor(Helpers.rgbToHex(r, g, b));
+            }
+
+            TextListener(EditText e){
+                this.e = e;
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!editable.toString().equals("")) {
+                    try {
+                        if (Integer.parseInt(editable.toString()) > 255) {
+                            Helpers.makeToast("Max value is 255.", getApplicationContext());
+                            e.setText("255");
+                        }
+                        if (Integer.parseInt(editable.toString()) < 0) {
+                            Helpers.makeToast("Min value is 0.", getApplicationContext());
+                            e.setText("0");
+                        }
+                    } catch (NumberFormatException e2) {
+                        e2.printStackTrace();
+                    }
+
+                    updateColorShow();
+                }
+            }
+        };
+
+        r.addTextChangedListener(new TextListener(r));
+        g.addTextChangedListener(new TextListener(g));
+        b.addTextChangedListener(new TextListener(b));
     }
 
     private void setupSeekBars(View alertView, final EditText r, final EditText g, final EditText b, final View colorShow){
