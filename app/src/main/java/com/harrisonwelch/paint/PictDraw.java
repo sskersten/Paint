@@ -96,9 +96,10 @@ public class PictDraw extends View{
         //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
         linePaint = new Paint();
-        linePaint.setColor(0xff00ff00);
-        linePaint.setStyle(Paint.Style.FILL);
-        linePaint.setStrokeWidth(Helpers.dpToPx(5, getContext()));
+        linePaint.setColor(Color.BLACK);
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setStrokeWidth(5f);
+        linePaint.setStrokeJoin(Paint.Join.ROUND);
 
         path = new Path();
 
@@ -360,7 +361,7 @@ public class PictDraw extends View{
     }
 
     public void startPath(float x, float y){
-        path.reset();
+//        path.reset();
         path.moveTo(x,y);
         currX = x;
         currY = y;
@@ -368,7 +369,8 @@ public class PictDraw extends View{
 
     public void continuePath(float x, float y){
         if ( Math.abs(currX - x) >= 4 || Math.abs(currY - y) >= 4 ){
-            path.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
+//            path.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
+            path.lineTo(x,y);
             currX = x;
             currY = y;
         }
@@ -378,10 +380,9 @@ public class PictDraw extends View{
         path.lineTo(x,y);
         currX = x;
         currY = y;
-//        canvas.drawPath(path, linePaint);
+//        this.canvas.drawPath(path, linePaint);
         paths.add(path);
-        path.reset();
-        invalidate();
+//        path.reset();
     }
 }
 
