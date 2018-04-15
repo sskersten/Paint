@@ -3,25 +3,19 @@ package com.harrisonwelch.paint;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -29,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
@@ -124,7 +117,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         final EditText b = alertView.findViewById(R.id.editText_blue);
         final View colorShow = alertView.findViewById(R.id.colorShow);
 
-        setupEditTexts(r, g, b, colorShow);
+        setupEditTexts(r, g, b, colorShow, alertView);
         setupSeekBars(alertView, r, g, b, colorShow);
 
 
@@ -134,7 +127,9 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
-
+                verifyEditText(r);
+                verifyEditText(g);
+                verifyEditText(b);
 
                 int color = Helpers.rgbToHex(r, g, b);
                 pictDraw.setColor(color);
@@ -142,32 +137,31 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         });
 
         AlertDialog alert = builder.create();
-
-
         return alert;
     }
 
-    private void setupEditTexts(final EditText r, final EditText g, final EditText b, final View colorShow){
+    private void verifyEditText(EditText e){
+        if (e.getText().toString().equals("")){
+            Helpers.makeToast("Putting 0 for unfilled color slots...", getApplicationContext());
+            e.setText("0");
+        }
+    }
+
+    private void setupEditTexts(final EditText r, final EditText g, final EditText b, final View colorShow, View alertView){
         class TextListener implements TextWatcher {
             EditText e;
+            SeekBar s;
 
-            private void updateColorShow(){
-                colorShow.setBackgroundColor(Helpers.rgbToHex(r, g, b));
-            }
-
-            TextListener(EditText e){
+            TextListener(EditText e, SeekBar s){
                 this.e = e;
+                this.s = s;
             }
 
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -185,49 +179,61 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                         e2.printStackTrace();
                     }
 
-                    updateColorShow();
+                    s.setProgress(Integer.parseInt(e.getText().toString()));
+                    e.setSelection(e.getText().length());
+                    updateColorShow(colorShow, r, g, b);
                 }
             }
         };
 
-        r.addTextChangedListener(new TextListener(r));
-        g.addTextChangedListener(new TextListener(g));
-        b.addTextChangedListener(new TextListener(b));
+        //When the user clicks off the edit text, if they left it blank, force it to 0.
+        class focusChangeListener implements View.OnFocusChangeListener {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus){
+                    EditText e = (EditText) view;
+                    if (e.getText().toString().equals("")) {
+                        e.setText("0");
+                    }
+                }
+            }
+        };
+
+        r.addTextChangedListener(new TextListener(r, (SeekBar) alertView.findViewById(R.id.seekBar_r)));
+        r.setOnFocusChangeListener(new focusChangeListener());
+        g.addTextChangedListener(new TextListener(g, (SeekBar) alertView.findViewById(R.id.seekBar_g)));
+        g.setOnFocusChangeListener(new focusChangeListener());
+        b.addTextChangedListener(new TextListener(b, (SeekBar) alertView.findViewById(R.id.seekBar_b)));
+        b.setOnFocusChangeListener(new focusChangeListener());
     }
 
     private void setupSeekBars(View alertView, final EditText r, final EditText g, final EditText b, final View colorShow){
         class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
             EditText e;
 
-            private void updateColorShow(){
-                colorShow.setBackgroundColor(Helpers.rgbToHex(r, g, b));
-            }
-
             public SeekBarListener(EditText e) {
                 this.e = e;
-
             }
 
             @Override
-            public void onProgressChanged(SeekBar seekBar, int value, boolean b) {
+            public void onProgressChanged(SeekBar seekBar, int value, boolean b2) {
                 e.setText(Integer.toString(value));
-                updateColorShow();
+                updateColorShow(colorShow, r, g, b);
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         };
 
         ((SeekBar)alertView.findViewById(R.id.seekBar_r)).setOnSeekBarChangeListener(new SeekBarListener(r));
         ((SeekBar)alertView.findViewById(R.id.seekBar_g)).setOnSeekBarChangeListener(new SeekBarListener(g));
         ((SeekBar)alertView.findViewById(R.id.seekBar_b)).setOnSeekBarChangeListener(new SeekBarListener(b));
+    }
+
+    private void updateColorShow(View colorShow, EditText r, EditText g, EditText b){
+        colorShow.setBackgroundColor(Helpers.rgbToHex(r, g, b));
     }
 
 

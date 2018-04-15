@@ -36,13 +36,28 @@ public class Helpers {
     }
 
     //takes in three edit texts and gives back a color based on the values in there
-    public static int rgbToHex(EditText r, EditText g, EditText b){
+    public static int rgbToHex(EditText er, EditText eg, EditText eb){
+        int r, g, b;
 
-        int color = Color.rgb(Integer.parseInt(r.getText().toString()),
-                Integer.parseInt(g.getText().toString()),
-                Integer.parseInt(b.getText().toString()));
+        try {
+            r = Integer.parseInt(er.getText().toString());
+        } catch (NumberFormatException e) {
+            r = 0;
+        }
 
-        Log.i("color", Integer.toString(color));
-        return color;
+        try {
+            g = Integer.parseInt(eg.getText().toString());
+        } catch (NumberFormatException e) {
+            g = 0;
+        }
+
+        try {
+            b = Integer.parseInt(eb.getText().toString());
+        } catch (NumberFormatException e) {
+            b = 0;
+        }
+
+        return Color.rgb(r,g,b);
+
     }
 }
