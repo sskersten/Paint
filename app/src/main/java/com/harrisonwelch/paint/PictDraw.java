@@ -361,8 +361,9 @@ public class PictDraw extends View{
         currX = x;
         currY = y;
 //        this.canvas.drawPath(path, linePaint);
-        paths.add(path);
-//        path.reset();
+        MyPath newPath = new MyPath(path, color);
+        shapes.add(newPath);
+        path = new Path();
     }
 
     public void clear(){
@@ -439,6 +440,43 @@ class Line implements Shape{
     }
 
     public int getColor(){
+        return color;
+    }
+
+    @Override
+    public int getPaintToUse() {
+        return PAINT_STROKE;
+    }
+}
+
+
+class MyPath implements Shape {
+    public Path path;
+    public int color;
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public MyPath(Path path, int color) {
+        this.path = path;
+        this.color = color;
+    }
+
+    public void draw(Canvas canvas, Paint paint){
+        canvas.drawPath(path, paint);
+    }
+
+    @Override
+    public int getColor() {
         return color;
     }
 
