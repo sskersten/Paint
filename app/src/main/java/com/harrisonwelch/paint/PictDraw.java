@@ -241,7 +241,7 @@ public class PictDraw extends View{
     //=     TOUCH EVENTS
     //==============================================================================================
     //The rectangle the user is currently manipulating and 'drawing'
-    private Rectangle currentlyDrawingRectangle;
+    private boolean isDrawing = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -281,31 +281,27 @@ public class PictDraw extends View{
         return true;
     }
 
-    private Line currentlyDrawingLine;
-    //handles all of the drawing of rectangles at different stages of the touch
+
+    //Create a line on first touch, and move the line while the user is dragging their finger around
     private void onDrawLine(MotionEvent event){
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            //int color = rand.nextInt(0x1000000) + 0xff000000;
 
             Line line = new Line(x, y, x+1, y+1, color, thickness);
-            currentlyDrawingLine = line;
             shapes.push(line);
-
-            invalidate();
-
-
+            isDrawing = true;
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
-            currentlyDrawingLine = null;
-            invalidate();
+            isDrawing = false;
         }
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            currentlyDrawingLine.setEndx(( (int) event.getX()));
-            currentlyDrawingLine.setEndy(( (int) event.getY()));
-            invalidate();
+            if (isDrawing) {
+                ((Line) shapes.peek()).setEndx(((int) event.getX()));
+                ((Line) shapes.peek()).setEndy(((int) event.getY()));
+            }
         }
+        invalidate();
     }
 
     //handles all of the drawing of rectangles at different stages of the touch
@@ -313,26 +309,21 @@ public class PictDraw extends View{
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            //int color = rand.nextInt(0x1000000) + 0xff000000;
 
             Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
             rect.setColor(color);
-            currentlyDrawingRectangle = rect;
             shapes.push(rect);
-
-
-
-            invalidate();
+            isDrawing = true;
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
-            currentlyDrawingRectangle = null;
-            invalidate();
+            isDrawing = false;
         }
+        //update the last drawn shape if we're still drawing it and moved
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            currentlyDrawingRectangle.setRight( (int) event.getX());
-            currentlyDrawingRectangle.setBottom( (int) event.getY());
-            invalidate();
+            ((Rectangle) shapes.peek()).setRight( (int) event.getX());
+            ((Rectangle) shapes.peek()).setBottom( (int) event.getY());
         }
+        invalidate();
     }
 
 
