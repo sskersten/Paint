@@ -333,13 +333,14 @@ public class PictDraw extends View{
 
 
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
+        Log.i(TAG_PICT_DRAW, "setNewImage(...)");
         this.bitmap = bitmap;
         canvas = new Canvas(alteredBitmap);
 //        mainPaint = new Paint();
 //        mainPaint.setColor(Color.GREEN);
 //        mainPaint.setStrokeWidth(5);
         matrix = new Matrix();
-        matrix.postScale(currentWidth/bitmap.getWidth(), currentHeight / bitmap.getHeight());
+//        matrix.postScale(currentWidth/bitmap.getWidth(), currentHeight / bitmap.getHeight());
 //        bitmap.setHeight(currentHeight);
 //        bitmap.setWidth(currentWidth);
         canvas.drawBitmap(bitmap,matrix ,mainPaint);

@@ -47,9 +47,6 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         pictDraw = findViewById(R.id.pict_draw);
         pictDraw.setDrawingCacheEnabled(true);
 
-
-
-
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
