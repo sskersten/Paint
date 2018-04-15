@@ -82,9 +82,36 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             }
         });
 
-
+        setupThicknessEditText();
         RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
         radioGroup.setOnCheckedChangeListener(this);
+    }
+
+    private void setupThicknessEditText(){
+        final EditText thicknessET = findViewById(R.id.editText_thickness);
+
+        thicknessET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!editable.toString().equals("")){
+                    try {
+                        pictDraw.setStrokeThickness(Integer.parseInt(editable.toString()));
+                    } catch (NumberFormatException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     //update the tool code in PictDraw based on what gets checked here.

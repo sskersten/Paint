@@ -99,6 +99,7 @@ public class PictDraw extends View{
         linePaint.setStrokeWidth(thickness);
         linePaint.setStrokeJoin(Paint.Join.ROUND);
 
+
         path = new Path();
 
     }
@@ -171,7 +172,7 @@ public class PictDraw extends View{
                 s.draw(canvas, linePaint);
             }
         }
-
+        linePaint.setStrokeWidth(thickness);
         canvas.drawPath(path, linePaint);
 
         this.canvas = canvas;
@@ -360,6 +361,7 @@ public class PictDraw extends View{
     //=     PATH
     //==============================================================================================
     public void startPath(float x, float y){
+
 //        path.reset();
         path.moveTo(x,y);
         currX = x;
