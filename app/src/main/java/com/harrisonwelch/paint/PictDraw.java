@@ -29,31 +29,28 @@ public class PictDraw extends View{
     public static final int TOOL_LINE = 2;
     public static final int TOOL_RECTANGLE = 3;
 
+    public static final int COLOR_RANDOM = -1;
 
-    private int currentTool = TOOL_BRUSH;
 
-    public int getCurrentTool() {
-        return currentTool;
-    }
+    private int currentTool = TOOL_BRUSH;           //what tool is being used by the user
 
-    public void setCurrentTool(int currentTool) {
-        this.currentTool = currentTool;
-    }
+
 
 
     private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
     private int currentHeight, currentWidth;        //height and width of our widget container
-    private Paint backgroundPaint;
-    private Paint mainPaint;
-    private Paint linePaint;
-    private Random rand;
-    private int color;
+    private Paint backgroundPaint;                  //draws the background
+    private Paint mainPaint;                        //draws any fill-based things
+    private Paint linePaint;                        //draws any stroke-based things
+    private Random rand;                            //random number generator
+    private int color;                              //what color to draw new shapes with
+    private int thickness;                          //how thick to make lines
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
     Path path;
 
-    Stack<Shape> shapes;
+    Stack<Shape> shapes;                            //all of the shapes that have been drawn on the canvas
     ArrayList<Path> paths;
 
     float currX; // current path position
@@ -111,17 +108,24 @@ public class PictDraw extends View{
     //Sets the stroke to a passed in dp value
     // after converting it to px
     public void setStrokeThickness(int dpSize){
-        linePaint.setStrokeWidth(Helpers.dpToPx(dpSize, getContext()));
-        invalidate();
+        thickness = (int) Helpers.dpToPx(dpSize, getContext());
     }
 
+    public int getStrokeThickness(){
+        return thickness;
+    }
 
     public Bitmap getBitmap(){
         return this.bitmap;
     }
 
+    //return a random color if set to that, else return the color
     public int getColor() {
-        return color;
+        if (color == -1){
+            return rand.nextInt(0x1000000) + 0xff000000;
+        } else {
+            return color;
+        }
     }
 
     public void setColor(int color) {
@@ -134,6 +138,14 @@ public class PictDraw extends View{
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
+    }
+
+    public int getCurrentTool() {
+        return currentTool;
+    }
+
+    public void setCurrentTool(int currentTool) {
+        this.currentTool = currentTool;
     }
 
     //==============================================================================================
@@ -157,7 +169,6 @@ public class PictDraw extends View{
                 s.draw(canvas, linePaint);
             }
         }
-
 
         canvas.drawPath(path, linePaint);
 
@@ -234,6 +245,10 @@ public class PictDraw extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+            performClick();         //needed by android studio to handle normal click event stuff
+        }
+
         float x = event.getX();
         float y = event.getY();
 
@@ -263,7 +278,6 @@ public class PictDraw extends View{
            onDrawLine(event);
         }
 
-
         return true;
     }
 
@@ -275,26 +289,21 @@ public class PictDraw extends View{
             int y = (int) event.getY();
             //int color = rand.nextInt(0x1000000) + 0xff000000;
 
-            Line line = new Line();
-            line.startx = x;
-            line.starty = y;
-            line.endx = x + 1;
-            line.endy = y + 1;
-            line.color = color;
+            Line line = new Line(x, y, x+1, y+1, color, thickness);
             currentlyDrawingLine = line;
             shapes.push(line);
 
             invalidate();
 
-            performClick();         //needed by android studio to handle normal click event stuff
+
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
             currentlyDrawingLine = null;
             invalidate();
         }
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            currentlyDrawingLine.endx = ( (int) event.getX());
-            currentlyDrawingLine.endy = ( (int) event.getY());
+            currentlyDrawingLine.setEndx(( (int) event.getX()));
+            currentlyDrawingLine.setEndy(( (int) event.getY()));
             invalidate();
         }
     }
@@ -314,8 +323,6 @@ public class PictDraw extends View{
 
 
             invalidate();
-
-            performClick();         //needed by android studio to handle normal click event stuff
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
             currentlyDrawingRectangle = null;
@@ -430,11 +437,6 @@ class Rectangle implements Shape{
         rect.bottom = bottom;
     }
 
-    public void setRightAndBottom(int right, int bottom){
-        rect.right = right;
-        rect.bottom = bottom;
-    }
-
     public void setColor(int color){
         this.color = color;
     }
@@ -457,16 +459,39 @@ class Rectangle implements Shape{
 //=     LINE
 //==============================================================================================
 class Line implements Shape{
-    public int startx;
-    public int starty;
-    public int endx;
-    public int endy;
-    public int color;
+    private int startx;
+    private int starty;
+    private int endx;
+    private int endy;
+    private int color;
+    private int thickness;
 
 
+
+    public Line(int startx, int starty, int endx, int endy, int color, int thickness) {
+        this.startx = startx;
+        this.starty = starty;
+        this.endx = endx;
+
+        this.endy = endy;
+        this.color = color;
+        this.thickness = thickness;
+    }
 
     public void draw(Canvas canvas, Paint paint){
         canvas.drawLine(startx, starty, endx, endy, paint);
+    }
+
+    public void setEndx(int endx) {
+        this.endx = endx;
+    }
+
+    public void setEndy(int endy) {
+        this.endy = endy;
+    }
+
+    public int getThickness() {
+        return thickness;
     }
 
     public int getColor(){
