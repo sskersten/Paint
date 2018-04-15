@@ -59,6 +59,9 @@ public class PictDraw extends View{
     float currX; // current path position
     float currY; // current path position
 
+    //==============================================================================================
+    //=     SETUP
+    //==============================================================================================
     public PictDraw(Context context) {
         super(context);
         setup();
@@ -102,6 +105,9 @@ public class PictDraw extends View{
 
     }
 
+    //==============================================================================================
+    //=     GETTERS/SETTERS
+    //==============================================================================================
     //Sets the stroke to a passed in dp value
     // after converting it to px
     public void setStrokeThickness(int dpSize){
@@ -110,6 +116,29 @@ public class PictDraw extends View{
     }
 
 
+    public Bitmap getBitmap(){
+        return this.bitmap;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    public void setCanvas(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    //==============================================================================================
+    //=     BASE VIEW FUNCTIONS
+    //==============================================================================================
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -146,7 +175,60 @@ public class PictDraw extends View{
         canvas = new Canvas(bitmap);
     }
 
+    //not sure why we have to have this but android was yelling about it?
+    @Override
+    public boolean performClick() {
 
+        return super.performClick();
+    }
+
+    //update the size of the widget when measuring the thing
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int dpPixel = 100;
+        float actualPixels = Helpers.dpToPx(dpPixel, getContext());
+
+
+        int desiredHeight = (int) actualPixels;
+        int desiredWidth = (int) actualPixels;
+
+        //this is all in pixels
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+
+        int width, height;      //the end width and height to be used.
+
+        //the passed in width is the max we can be.
+        // if we're given a height to do EXACTLY, use that height.
+        // otherwise, use whatever is smaller, our desired height or the
+        // passed in height.
+        if (widthMode == MeasureSpec.EXACTLY){              //used whenever we set a size with dp
+            width = widthSize;
+        } else if (widthMode == MeasureSpec.AT_MOST) {      //basically used with stuff when something can be AT MOST this
+            width = Math.min(desiredWidth, widthSize);
+        } else {
+            width = desiredWidth;
+        }
+
+        if (heightMode == MeasureSpec.EXACTLY){
+            height = heightSize;
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            height = Math.min(desiredHeight, heightSize);
+        } else {
+            height = desiredHeight;
+        }
+
+
+        setMeasuredDimension(width, height);
+
+    }
+
+
+    //==============================================================================================
+    //=     TOUCH EVENTS
+    //==============================================================================================
     //The rectangle the user is currently manipulating and 'drawing'
     private Rectangle currentlyDrawingRectangle;
 
@@ -246,63 +328,9 @@ public class PictDraw extends View{
         }
     }
 
-    public Canvas getCanvas() {
-        return canvas;
-    }
-
-    public void setCanvas(Canvas canvas) {
-        this.canvas = canvas;
-    }
-
-    //not sure why we have to have this but android was yelling about it?
-    @Override
-    public boolean performClick() {
-
-        return super.performClick();
-    }
-
-    //update the size of the widget when measuring the thing
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int dpPixel = 100;
-        float actualPixels = Helpers.dpToPx(dpPixel, getContext());
 
 
-        int desiredHeight = (int) actualPixels;
-        int desiredWidth = (int) actualPixels;
 
-        //this is all in pixels
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-
-        int width, height;      //the end width and height to be used.
-
-        //the passed in width is the max we can be.
-        // if we're given a height to do EXACTLY, use that height.
-        // otherwise, use whatever is smaller, our desired height or the
-        // passed in height.
-        if (widthMode == MeasureSpec.EXACTLY){              //used whenever we set a size with dp
-            width = widthSize;
-        } else if (widthMode == MeasureSpec.AT_MOST) {      //basically used with stuff when something can be AT MOST this
-            width = Math.min(desiredWidth, widthSize);
-        } else {
-            width = desiredWidth;
-        }
-
-        if (heightMode == MeasureSpec.EXACTLY){
-            height = heightSize;
-        } else if (heightMode == MeasureSpec.AT_MOST) {
-            height = Math.min(desiredHeight, heightSize);
-        } else {
-            height = desiredHeight;
-        }
-
-
-        setMeasuredDimension(width, height);
-
-    }
 
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
         this.bitmap = bitmap;
@@ -328,18 +356,10 @@ public class PictDraw extends View{
         invalidate();
     }
 
-    public Bitmap getBitmap(){
-        return this.bitmap;
-    }
 
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-    }
-
+    //==============================================================================================
+    //=     PATH
+    //==============================================================================================
     public void startPath(float x, float y){
 //        path.reset();
         path.moveTo(x,y);
@@ -372,6 +392,9 @@ public class PictDraw extends View{
     }
 }
 
+//==============================================================================================
+//=     SHAPE CLASSES
+//==============================================================================================
 //lets us keep all the shapes in a nice vector to draw in the same order they were placed
 interface Shape{
     void draw(Canvas canvas, Paint paint);
@@ -383,7 +406,9 @@ interface Shape{
 }
 
 //Basic wrapper class for Rect that lets it also hold a color
-
+//==============================================================================================
+//=     RECTANGLE
+//==============================================================================================
 class Rectangle implements Shape{
     private Rect rect;
     private int color;
@@ -428,12 +453,17 @@ class Rectangle implements Shape{
     }
 }
 
+//==============================================================================================
+//=     LINE
+//==============================================================================================
 class Line implements Shape{
     public int startx;
     public int starty;
     public int endx;
     public int endy;
     public int color;
+
+
 
     public void draw(Canvas canvas, Paint paint){
         canvas.drawLine(startx, starty, endx, endy, paint);
@@ -449,7 +479,9 @@ class Line implements Shape{
     }
 }
 
-
+//==============================================================================================
+//=     MYPATH
+//==============================================================================================
 class MyPath implements Shape {
     public Path path;
     public int color;
