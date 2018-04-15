@@ -86,16 +86,17 @@ public class PictDraw extends View{
         backgroundPaint.setColor(0xffffffff);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
-        color = 0xff00ff00;
+        color = 0xff00f0f0;
+        setStrokeThickness(5);
         mainPaint = new Paint();
         mainPaint.setColor(color);
         mainPaint.setStyle(Paint.Style.FILL);
         //mainPaint.setStrokeWidth(Helpers.dpToPx(20, getContext()));
 
         linePaint = new Paint();
-        linePaint.setColor(Color.BLACK);
+        linePaint.setColor(color);
         linePaint.setStyle(Paint.Style.STROKE);
-        linePaint.setStrokeWidth(5f);
+        linePaint.setStrokeWidth(thickness);
         linePaint.setStrokeJoin(Paint.Join.ROUND);
 
         path = new Path();
@@ -166,6 +167,7 @@ public class PictDraw extends View{
                 s.draw(canvas, mainPaint);
             } else if (s.getPaintToUse() == Shape.PAINT_STROKE) {
                 linePaint.setColor(s.getColor());
+                linePaint.setStrokeWidth(s.getThickness());
                 s.draw(canvas, linePaint);
             }
         }
@@ -240,7 +242,6 @@ public class PictDraw extends View{
     //==============================================================================================
     //=     TOUCH EVENTS
     //==============================================================================================
-    //The rectangle the user is currently manipulating and 'drawing'
     private boolean isDrawing = false;
 
     @Override
@@ -379,7 +380,7 @@ public class PictDraw extends View{
         currX = x;
         currY = y;
 //        this.canvas.drawPath(path, linePaint);
-        MyPath newPath = new MyPath(path, color);
+        MyPath newPath = new MyPath(path, color, thickness);
         shapes.add(newPath);
         path = new Path();
     }
@@ -393,10 +394,13 @@ public class PictDraw extends View{
 //==============================================================================================
 //=     SHAPE CLASSES
 //==============================================================================================
-//lets us keep all the shapes in a nice vector to draw in the same order they were placed
+//Defines a shape, which must know how to draw itself when given a canvas and a paint,
+// have a color, and know what type of paint to use.
+// using this lets us have a stack of shapes that we can draw in order
 interface Shape{
     void draw(Canvas canvas, Paint paint);
     int getColor();
+    int getThickness();
 
     int PAINT_FILL = 1;
     int PAINT_STROKE = 0;
@@ -439,6 +443,8 @@ class Rectangle implements Shape{
     public Rect getRect(){
         return rect;
     }
+
+    public int getThickness(){return 1;};
 
     @Override
     public int getPaintToUse() {
@@ -499,8 +505,9 @@ class Line implements Shape{
 //=     MYPATH
 //==============================================================================================
 class MyPath implements Shape {
-    public Path path;
-    public int color;
+    private Path path;
+    private int color;
+    private int thickness;
 
     public Path getPath() {
         return path;
@@ -514,9 +521,10 @@ class MyPath implements Shape {
         this.color = color;
     }
 
-    public MyPath(Path path, int color) {
+    public MyPath(Path path, int color, int thickness) {
         this.path = path;
         this.color = color;
+        this.thickness = thickness;
     }
 
     public void draw(Canvas canvas, Paint paint){
@@ -527,6 +535,8 @@ class MyPath implements Shape {
     public int getColor() {
         return color;
     }
+
+    public int getThickness(){return thickness;};
 
     @Override
     public int getPaintToUse() {
