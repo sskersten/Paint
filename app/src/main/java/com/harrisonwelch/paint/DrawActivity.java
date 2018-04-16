@@ -47,6 +47,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     Bitmap bitmap;
     Bitmap alteredBitmap;
 
+
+
     PictDraw pictDraw;
 
     BoxedVertical brushThickness;
@@ -175,6 +177,9 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 break;
             case R.id.radioButton_rectangle:
                 pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
+                break;
+            case R.id.radioButton_sticker:
+                pictDraw.setCurrentTool(PictDraw.TOOL_STICKER);
                 break;
         }
     }
