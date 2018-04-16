@@ -36,6 +36,9 @@ public class PictDraw extends View{
 
     private int currentTool = TOOL_BRUSH;           //what tool is being used by the user
 
+    public static final int STICKER_STAR = 1;
+    public static final int STICKER_LEAF = 2;
+    public static final int STICKER_LEE = 3;
     Bitmap currentBitmap;
     Bitmap stickerStar;
     Bitmap stickerLee;
@@ -121,7 +124,7 @@ public class PictDraw extends View{
         Canvas canvas = new Canvas(stickerStar);
         androidDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         androidDrawable.draw(canvas);
-        currentBitmap = stickerStar;
+
 
         Drawable leeDrawable = getResources().getDrawable((R.drawable.lee));
 
@@ -141,13 +144,28 @@ public class PictDraw extends View{
         leafDrawable.setBounds(0, 0, canvas3.getWidth(), canvas3.getHeight());
         leafDrawable.draw(canvas3);
 
-        currentBitmap = stickerLee;
-
+        currentBitmap = stickerStar;
     }
 
     //==============================================================================================
     //=     GETTERS/SETTERS
     //==============================================================================================
+    public void setSticker(int stickerId){
+        Log.i("Sticker", "Called stickerset with " + stickerId);
+
+        switch(stickerId){
+            case STICKER_STAR:
+                currentBitmap = stickerStar;
+                break;
+            case STICKER_LEAF:
+                currentBitmap = stickerLeaf;
+                break;
+            case STICKER_LEE:
+                currentBitmap = stickerLee;
+                break;
+        }
+    }
+
     //Sets the stroke to a passed in dp value
     // after converting it to px
     public void setStrokeThickness(int dpSize){

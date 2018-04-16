@@ -86,6 +86,14 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         });
 
 
+        final AlertDialog stickerAlert = setupStickerDialog();
+        findViewById(R.id.button_changeSticker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stickerAlert.show();
+            }
+        });
+
         final AlertDialog alert = setupColorDialog();
         findViewById(R.id.button_color).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +141,43 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         colorIndicator = findViewById(R.id.linearLayout);
         colorIndicator.setBackgroundColor(pictDraw.getColor());
         brushThickness.setValue(5);
+    }
+
+
+    private AlertDialog setupStickerDialog(){
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        final View stickerAlert = inflater.inflate(R.layout.sticker_alert, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
+
+
+
+
+        builder.setView(stickerAlert);
+        builder.setTitle("Choose a Sticker");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                RadioGroup r = stickerAlert.findViewById(R.id.radioGroup_sticker);
+
+                int sticker = 1;
+                switch (r.getCheckedRadioButtonId()){
+                    case R.id.radioButton_star: sticker = PictDraw.STICKER_STAR;
+                        break;
+                    case R.id.radioButton_leaf: sticker = PictDraw.STICKER_LEAF;
+                        break;
+                    case R.id.radioButton_lee: sticker = PictDraw.STICKER_LEE;
+                        break;
+                }
+
+                pictDraw.setSticker(sticker);
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        return alert;
     }
 
 //    private void setupThicknessEditText(){
