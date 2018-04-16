@@ -38,6 +38,8 @@ public class PictDraw extends View{
 
     Bitmap currentBitmap;
     Bitmap stickerStar;
+    Bitmap stickerLee;
+    Bitmap stickerLeaf;
 
 
     private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
@@ -113,13 +115,34 @@ public class PictDraw extends View{
     private void setupStickerBitmaps(){
         Drawable androidDrawable = getResources().getDrawable((R.drawable.star));
 
-        int size = (int) Helpers.dpToPx(thickness, getContext());
+        int size = (int) Helpers.dpToPx(50, getContext());
         stickerStar = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(stickerStar);
         androidDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         androidDrawable.draw(canvas);
         currentBitmap = stickerStar;
+
+        Drawable leeDrawable = getResources().getDrawable((R.drawable.lee));
+
+        stickerLee = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas2 = new Canvas(stickerLee);
+        leeDrawable.setBounds(0, 0, canvas2.getWidth(), canvas2.getHeight());
+        leeDrawable.draw(canvas2);
+
+
+
+        Drawable leafDrawable = getResources().getDrawable((R.drawable.leaves));
+
+        stickerLeaf = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas3 = new Canvas(stickerLeaf);
+        leafDrawable.setBounds(0, 0, canvas3.getWidth(), canvas3.getHeight());
+        leafDrawable.draw(canvas3);
+
+        currentBitmap = stickerLee;
+
     }
 
     //==============================================================================================
@@ -619,10 +642,6 @@ class MyPath implements Shape {
 //=     STICKER
 //==============================================================================================
 class Sticker implements Shape {
-   // public static final int STICKER_STAR = 1;
-    //public static final int STICKER_LEAVES = 2;
-    //public static final int STICKER_LEE = 3;
-
     private int x, y;
     private Bitmap bitmap;
 
