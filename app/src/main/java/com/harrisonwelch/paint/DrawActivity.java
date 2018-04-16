@@ -88,7 +88,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             }
         });
 
-        setupThicknessEditText();
+//        setupThicknessEditText();
         RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -117,32 +117,32 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         });
     }
 
-    private void setupThicknessEditText(){
-        final EditText thicknessET = findViewById(R.id.editText_thickness);
-
-        thicknessET.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!editable.toString().equals("")){
-                    try {
-                        pictDraw.setStrokeThickness(Integer.parseInt(editable.toString()));
-                    } catch (NumberFormatException e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
+//    private void setupThicknessEditText(){
+//        final EditText thicknessET = findViewById(R.id.editText_thickness);
+//
+//        thicknessET.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                if (!editable.toString().equals("")){
+//                    try {
+//                        pictDraw.setStrokeThickness(Integer.parseInt(editable.toString()));
+//                    } catch (NumberFormatException e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     //update the tool code in PictDraw based on what gets checked here.
     @Override
@@ -338,7 +338,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     }
 
     public void saveImagePublic(){
-        File publicDir = getPublicAlbumStorageDir("testAlbum");
+        File publicDir = getPublicAlbumStorageDir("Emailed Photos");
         String filename = "myfile.png";
         this.publicFile = new File(publicDir,filename);
         try {
