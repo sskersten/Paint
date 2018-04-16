@@ -162,7 +162,9 @@ public class PictDraw extends View{
         canvas.drawPaint(backgroundPaint);
 
         // then the image (if set)
-        canvas.drawBitmap(bitmap, matrix, mainPaint);
+        if (bitmap != null){
+            canvas.drawBitmap(bitmap, matrix, mainPaint);
+        }
 
         // go thru shaps 1 by 1
         for (Shape s : shapes){
@@ -333,32 +335,20 @@ public class PictDraw extends View{
         invalidate();
     }
 
-
-
-
-
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
         Log.i(TAG_PICT_DRAW, "setNewImage(...)");
         this.bitmap = bitmap;
         canvas = new Canvas(alteredBitmap);
-//        mainPaint = new Paint();
-//        mainPaint.setColor(Color.GREEN);
-//        mainPaint.setStrokeWidth(5);
         matrix = new Matrix();
-//        matrix.postScale(currentWidth/bitmap.getWidth(), currentHeight / bitmap.getHeight());
-//        bitmap.setHeight(currentHeight);
-//        bitmap.setWidth(currentWidth);
         canvas.drawBitmap(bitmap,matrix ,mainPaint);
 
         Log.i(TAG_PICT_DRAW, "bitmap.getHeight() = " + bitmap.getHeight());
         Log.i(TAG_PICT_DRAW, "bitmap.getWidth() = " + bitmap.getWidth());
         Log.i(TAG_PICT_DRAW, "currentHeight = " + currentHeight);
         Log.i(TAG_PICT_DRAW, "currentWidth = " + currentWidth);
-//        BitmapDrawable bd = new BitmapDrawable(getContext().getResources(), bitmap);
-//        setBackground(bd);
 
         Log.i(TAG_PICT_DRAW, " setting image");
-//        setImageBitmap(alteredBitmap);
+
         invalidate();
     }
 
@@ -394,14 +384,14 @@ public class PictDraw extends View{
         myPathTmp.lineTo(x,y);
         currX = x;
         currY = y;
-//        this.canvas.drawPath(path, linePaint);
-//        MyPath newPath = new MyPath(path, color, thickness);
         shapes.add(myPathTmp);
-//        path = new Path();
     }
 
     public void clear(){
         path.reset();
+        shapes.clear();
+        bitmap = null;
+//        bitmap = new Bitmap();
         invalidate();
     }
 }

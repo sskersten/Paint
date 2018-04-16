@@ -92,6 +92,15 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             }
         });
 
+        findViewById(R.id.button_new_page).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pictDraw != null){
+                    pictDraw.clear();
+                }
+            }
+        });
+
 //        setupThicknessEditText();
         RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
         radioGroup.setOnCheckedChangeListener(this);
