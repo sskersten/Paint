@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,12 +29,17 @@ import java.io.IOException;
 public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
+    private final static int REQUEST_EMAIL = 101;
 
-    String filename = "LOOK_HERE";
+    String file_path = "/sdcard";
     String fileContents = "image.png";
+    String fileLocation = null;
+    File publicFile = null;
     File dir;
     File file;
+    File publicDirectory;
     FileOutputStream fos;
+    FileOutputStream publicFos;
 
     Bitmap bitmap;
     Bitmap alteredBitmap;
@@ -59,7 +66,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             @Override
             public void onClick(View v) {
                 // save the edited image to photos or elsewhere
-                saveImage();
+//                saveImage();
+                saveImagev2();
             }
         });
 
@@ -82,6 +90,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         setupThicknessEditText();
         RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
         radioGroup.setOnCheckedChangeListener(this);
+
+        publicDirectory = getPublicFile();
     }
 
     private void setupThicknessEditText(){
@@ -272,9 +282,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     private void saveImage(){
         // TODO: implement
         Bitmap bitmapFromView = pictDraw.getDrawingCache();
-//        bitmapFromView.compress(Bitmap.CompressFormat.PNG, 95, )
-        this.dir = getApplicationContext().getDir(filename, Context.MODE_PRIVATE);
-        this.file = new File(dir, fileContents);
+        this.dir = getApplicationContext().getDir(file_path, Context.MODE_PRIVATE);
+        this.file = new File(this.dir, fileContents);
         try{
             this.fos = new FileOutputStream(this.file);
             bitmapFromView.compress(Bitmap.CompressFormat.PNG, 100, this.fos);
@@ -296,20 +305,64 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
     }
 
-    @SuppressLint("SetWorldReadable")
-    public void emailImage(){
-        saveImage();
-        if (this.file != null) {
-            this.file.setReadable(true, false);
-            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(this.file));
-            intent.setType("image/png");
-            startActivity(intent);
-        }
+    private void saveImagev2(){
+//        grantUriPermission();
+        this.fileLocation = MediaStore.Images.Media.insertImage(getContentResolver(),pictDraw.getDrawingCache(),"title.png","desc123");
 
+        Log.i(TAG_DRAW_ACT, "this.fileLocation = " + this.fileLocation);
     }
 
+    private File getPublicFile(){
+        String albumName = "TEST ALBUM";
+        File publicFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), albumName);
+        if(!publicFile.mkdirs()){
+            Log.e(TAG_DRAW_ACT,"Dir not created");
+        } else {
+            Log.i(TAG_DRAW_ACT,"[YES] Dir created");
+
+        }
+        return file;
+    }
+
+    @SuppressLint("SetWorldReadable")
+    public void emailImage(){
+        saveImagePublic();
+        if (this.publicFile != null) {
+            this.publicFile.setReadable(true, false);
+            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+            emailIntent.setType("text/plain");
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Email Subject");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, "hwelch1@my.apsu.edu");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello World!");
+            emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(this.publicFile));
+            startActivity(Intent.createChooser(emailIntent, "Select app to send this image."));
+        }
+    }
+
+    public void saveImagePublic(){
+        File publicDir = getPublicAlbumStorageDir("testAlbum");
+        String filename = "myfile.png";
+        this.publicFile = new File(publicDir,filename);
+        try {
+            this.publicFos = new FileOutputStream(publicFile);
+            Bitmap bitmapFromView = pictDraw.getDrawingCache();
+            bitmapFromView.compress(Bitmap.CompressFormat.PNG, 100, this.publicFos);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public File getPublicAlbumStorageDir(String albumName) {
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), albumName);
+        if (!file.mkdirs()) {
+            Log.e(TAG_DRAW_ACT, "Directory not created");
+        }
+        return file;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
