@@ -26,6 +26,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import abak.tr.com.boxedverticalseekbar.BoxedVertical;
+
 public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
@@ -66,8 +68,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             @Override
             public void onClick(View v) {
                 // save the edited image to photos or elsewhere
-//                saveImage();
-                saveImagev2();
+                saveImage();
             }
         });
 
@@ -92,6 +93,28 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         radioGroup.setOnCheckedChangeListener(this);
 
         publicDirectory = getPublicFile();
+
+        // setup box text view
+
+        BoxedVertical boxedVertical = (BoxedVertical) findViewById(R.id.boxedvertical_thickness);
+
+        boxedVertical.setOnBoxedPointsChangeListener(new BoxedVertical.OnValuesChangeListener() {
+            @Override
+            public void onPointsChanged(BoxedVertical boxedVertical, int i) {
+                Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical + " i = " + i);
+                pictDraw.setStrokeThickness(i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(BoxedVertical boxedVertical) {
+                Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical);
+            }
+
+            @Override
+            public void onStopTrackingTouch(BoxedVertical boxedVertical) {
+                Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical);
+            }
+        });
     }
 
     private void setupThicknessEditText(){
@@ -271,7 +294,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     }
 
 
-    private void openImage(){
+    private void openImage() {
         // TODO: implement
         Intent choosePictureIntent = new Intent(
                 Intent.ACTION_PICK,
@@ -280,32 +303,6 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     }
 
     private void saveImage(){
-        // TODO: implement
-        Bitmap bitmapFromView = pictDraw.getDrawingCache();
-        this.dir = getApplicationContext().getDir(file_path, Context.MODE_PRIVATE);
-        this.file = new File(this.dir, fileContents);
-        try{
-            this.fos = new FileOutputStream(this.file);
-            bitmapFromView.compress(Bitmap.CompressFormat.PNG, 100, this.fos);
-        } catch (FileNotFoundException e){
-            e.printStackTrace();
-        } finally {
-            try {
-                if ( fos != null) {
-                    fos.flush();
-                    fos.close();
-                }
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-//        MediaStore.Images.Media.insertImage(getContentResolver(), bitmapFromView, "image123", "description123");
-
-        Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
-
-    }
-
-    private void saveImagev2(){
 //        grantUriPermission();
         this.fileLocation = MediaStore.Images.Media.insertImage(getContentResolver(),pictDraw.getDrawingCache(),"title.png","desc123");
 

@@ -131,4 +131,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_color" />
 
+    <!--https://android-arsenal.com/details/1/6291-->
+    <abak.tr.com.boxedverticalseekbar.BoxedVertical
+        android:id="@+id/boxedvertical_thickness"
+        android:layout_width="20dp"
+        android:layout_height="200dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/editText_thickness"
+        app:step="1"
+        app:max="100"
+        app:defaultValue="5"
+        app:cornerRadius="10" />
+
+
 </android.support.constraint.ConstraintLayout>
