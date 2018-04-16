@@ -332,7 +332,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
             emailIntent.setType("text/plain");
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Email Subject");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, "hwelch1@my.apsu.edu");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hwelch1@my.apsu.edu"});
             emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello World!");
             emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(this.publicFile));
