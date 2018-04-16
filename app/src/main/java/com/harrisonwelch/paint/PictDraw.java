@@ -132,6 +132,7 @@ public class PictDraw extends View{
 
     public void setColor(int color) {
         this.color = color;
+        this.linePaint.setColor(color); // sometimes drawing goes in the previous color
     }
 
     public Canvas getCanvas() {
@@ -157,10 +158,13 @@ public class PictDraw extends View{
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        // give white back
         canvas.drawPaint(backgroundPaint);
 
+        // then the image (if set)
         canvas.drawBitmap(bitmap, matrix, mainPaint);
 
+        // go thru shaps 1 by 1
         for (Shape s : shapes){
 
             if (s.getPaintToUse() == Shape.PAINT_FILL) {
@@ -172,7 +176,8 @@ public class PictDraw extends View{
                 s.draw(canvas, linePaint);
             }
         }
-        linePaint.setStrokeWidth(thickness);
+//        linePaint.setStrokeWidth(thickness);
+        Log.i(TAG_PICT_DRAW, "HELLO");
         canvas.drawPath(path, linePaint);
 
         this.canvas = canvas;
@@ -363,29 +368,36 @@ public class PictDraw extends View{
     //==============================================================================================
     public void startPath(float x, float y){
 
-//        path.reset();
-        path.moveTo(x,y);
+        // make a new tmp path
+        MyPath myPathTmp = new MyPath();
+        myPathTmp.setColor(color);
+        myPathTmp.setThickness(thickness);
+        myPathTmp.moveTo(x,y);
         currX = x;
         currY = y;
+        shapes.add(myPathTmp);
     }
 
     public void continuePath(float x, float y){
+        MyPath myPathTmp = (MyPath)shapes.get(shapes.size()-1);
         if ( Math.abs(currX - x) >= 4 || Math.abs(currY - y) >= 4 ){
-            path.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
+            myPathTmp.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
 //            path.lineTo(x,y);
             currX = x;
             currY = y;
+            shapes.add(myPathTmp);
         }
     }
 
     public void stopPath(float x, float y){
-        path.lineTo(x,y);
+        MyPath myPathTmp = (MyPath)shapes.get(shapes.size()-1);
+        myPathTmp.lineTo(x,y);
         currX = x;
         currY = y;
 //        this.canvas.drawPath(path, linePaint);
-        MyPath newPath = new MyPath(path, color, thickness);
-        shapes.add(newPath);
-        path = new Path();
+//        MyPath newPath = new MyPath(path, color, thickness);
+        shapes.add(myPathTmp);
+//        path = new Path();
     }
 
     public void clear(){
@@ -453,6 +465,7 @@ class Rectangle implements Shape{
     public int getPaintToUse() {
         return PAINT_FILL;
     }
+
 }
 
 //==============================================================================================
@@ -524,6 +537,16 @@ class MyPath implements Shape {
         this.color = color;
     }
 
+    public void setThickness(int thickness){
+        this.thickness = thickness;
+    }
+
+    public MyPath(){
+        this.path = new Path();
+        this.color = 0xFF000000; // default to black
+        this.thickness = 5;
+    }
+
     public MyPath(Path path, int color, int thickness) {
         this.path = path;
         this.color = color;
@@ -544,5 +567,17 @@ class MyPath implements Shape {
     @Override
     public int getPaintToUse() {
         return PAINT_STROKE;
+    }
+
+    public void moveTo(float x, float y){
+        path.moveTo(x,y);
+    }
+
+    public void quadTo(float x, float y, float x2, float y2){
+        path.quadTo(x,y,x2,y2);
+    }
+
+    public void lineTo(float x, float y){
+        path.lineTo(x,y);
     }
 }

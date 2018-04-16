@@ -121,6 +121,28 @@
         <!--app:layout_constraintHorizontal_bias="0.0"-->
         <!--app:layout_constraintStart_toStartOf="parent"-->
         <!--app:layout_constraintTop_toBottomOf="@+id/textView5" />-->
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:text="Color"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/pict_draw"
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_color" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="horizontal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView6"/>
 
     <TextView
         android:id="@+id/textView5"
@@ -128,29 +150,30 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:text="Brush\nSize"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/pict_draw"
-        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_color" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <!--https://android-arsenal.com/details/1/6291-->
     <abak.tr.com.boxedverticalseekbar.BoxedVertical
         android:id="@+id/boxedvertical_thickness"
-        android:layout_width="30dp"
-        android:layout_height="200dp"
+        android:layout_width="25dp"
+        android:layout_height="150dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="10dp"
         app:cornerRadius="10"
         app:defaultValue="5"
         app:layout_constraintEnd_toStartOf="@+id/pict_draw"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView5"
         app:max="20"
+        app:progressColor="#77FF77"
         app:step="1"
-        app:textSize="12sp" />
+        app:textSize="20sp" />
 
 
 </android.support.constraint.ConstraintLayout>

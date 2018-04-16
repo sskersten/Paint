@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -47,6 +48,9 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     Bitmap alteredBitmap;
 
     PictDraw pictDraw;
+
+    BoxedVertical brushThickness;
+    LinearLayout colorIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +100,9 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
         // setup box text view
 
-        BoxedVertical boxedVertical = (BoxedVertical) findViewById(R.id.boxedvertical_thickness);
+        brushThickness = (BoxedVertical) findViewById(R.id.boxedvertical_thickness);
 
-        boxedVertical.setOnBoxedPointsChangeListener(new BoxedVertical.OnValuesChangeListener() {
+        brushThickness.setOnBoxedPointsChangeListener(new BoxedVertical.OnValuesChangeListener() {
             @Override
             public void onPointsChanged(BoxedVertical boxedVertical, int i) {
                 Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical + " i = " + i);
@@ -115,6 +119,9 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical);
             }
         });
+        colorIndicator = findViewById(R.id.linearLayout);
+        colorIndicator.setBackgroundColor(pictDraw.getColor());
+        brushThickness.setValue(5);
     }
 
 //    private void setupThicknessEditText(){
@@ -189,7 +196,12 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 verifyEditText(b);
 
                 int color = Helpers.rgbToHex(r, g, b);
+
+                // set the stroke on the drawing image
                 pictDraw.setColor(color);
+
+                // update the color indicator on screen
+                findViewById(R.id.linearLayout).setBackgroundColor(color);
             }
         });
 
@@ -307,6 +319,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         this.fileLocation = MediaStore.Images.Media.insertImage(getContentResolver(),pictDraw.getDrawingCache(),"title.png","desc123");
 
         Log.i(TAG_DRAW_ACT, "this.fileLocation = " + this.fileLocation);
+
+        Toast.makeText(getApplicationContext(), "Saved to Gallery", Toast.LENGTH_SHORT).show();
     }
 
     private File getPublicFile(){
