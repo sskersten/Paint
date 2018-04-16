@@ -39,7 +39,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/savemono"
-        app:layout_constraintStart_toEndOf="@+id/button_open_image"
+        app:layout_constraintStart_toEndOf="@+id/button_new_page"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
@@ -62,7 +62,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/newpage"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button_email_image"
+        app:layout_constraintStart_toEndOf="@+id/button_open_image"
         tools:layout_editor_absoluteX="264dp" />
 
     <ImageButton
