@@ -47,6 +47,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     Bitmap bitmap;
     Bitmap alteredBitmap;
 
+    AlertDialog stickerAlert;
+
 
 
     PictDraw pictDraw;
@@ -86,7 +88,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         });
 
 
-        final AlertDialog stickerAlert = setupStickerDialog();
+        stickerAlert = setupStickerDialog();
         findViewById(R.id.button_changeSticker).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -225,6 +227,10 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 break;
             case R.id.radioButton_sticker:
                 pictDraw.setCurrentTool(PictDraw.TOOL_STICKER);
+                stickerAlert.show();
+                break;
+            case R.id.radioButton_frame:
+                pictDraw.toggleDoDrawFrame();
                 break;
         }
     }
