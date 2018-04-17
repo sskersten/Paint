@@ -89,12 +89,6 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
 
         stickerAlert = setupStickerDialog();
-        findViewById(R.id.button_changeSticker).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stickerAlert.show();
-            }
-        });
 
         final AlertDialog alert = setupColorDialog();
         findViewById(R.id.button_color).setOnClickListener(new View.OnClickListener() {
@@ -116,6 +110,22 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 //        setupThicknessEditText();
         RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
         radioGroup.setOnCheckedChangeListener(this);
+
+        findViewById(R.id.radioButton_sticker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pictDraw.setCurrentTool(PictDraw.TOOL_STICKER);
+                stickerAlert.show();
+            }
+        });
+
+        findViewById(R.id.radioButton_frame).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pictDraw.toggleDoDrawFrame();
+            }
+        });
+
 
         publicDirectory = getPublicFile();
 
@@ -226,14 +236,14 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
                 break;
             case R.id.radioButton_sticker:
-                pictDraw.setCurrentTool(PictDraw.TOOL_STICKER);
-                stickerAlert.show();
+
                 break;
             case R.id.radioButton_frame:
-                pictDraw.toggleDoDrawFrame();
+
                 break;
         }
     }
+
 
     private AlertDialog setupColorDialog(){
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
