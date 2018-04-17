@@ -3,7 +3,6 @@ package com.harrisonwelch.paint;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 
@@ -46,6 +44,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
     Bitmap bitmap;
     Bitmap alteredBitmap;
+
+    AlertDialog stickerAlert;
 
 
 
@@ -95,16 +95,16 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         });
 
 
-        final AlertDialog stickerAlert = setupStickerDialog();
-        findViewById(R.id.button_changeSticker).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stickerAlert.show();
-            }
-        });
+        stickerAlert = setupStickerDialog();
 
         final AlertDialog alert = setupColorDialog();
         findViewById(R.id.button_color).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alert.show();
+            }
+        });
+        findViewById(R.id.linearLayout_color).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alert.show();
@@ -123,6 +123,22 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 //        setupThicknessEditText();
         RadioGroup radioGroup = findViewById(R.id.radioGroup_tools);
         radioGroup.setOnCheckedChangeListener(this);
+
+        findViewById(R.id.radioButton_sticker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pictDraw.setCurrentTool(PictDraw.TOOL_STICKER);
+                stickerAlert.show();
+            }
+        });
+
+        findViewById(R.id.radioButton_frame).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pictDraw.toggleDoDrawFrame();
+            }
+        });
+
 
         publicDirectory = getPublicFile();
 
@@ -147,7 +163,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical);
             }
         });
-        colorIndicator = findViewById(R.id.linearLayout);
+        colorIndicator = findViewById(R.id.linearLayout_color);
         colorIndicator.setBackgroundColor(pictDraw.getColor());
         brushThickness.setValue(5);
     }
@@ -233,10 +249,14 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
                 break;
             case R.id.radioButton_sticker:
-                pictDraw.setCurrentTool(PictDraw.TOOL_STICKER);
+
+                break;
+            case R.id.radioButton_frame:
+
                 break;
         }
     }
+
 
     private AlertDialog setupColorDialog(){
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
@@ -269,7 +289,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setColor(color);
 
                 // update the color indicator on screen
-                findViewById(R.id.linearLayout).setBackgroundColor(color);
+                findViewById(R.id.linearLayout_color).setBackgroundColor(color);
             }
         });
 

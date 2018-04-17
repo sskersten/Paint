@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#bbb"
+    android:background="@drawable/trianglify"
     tools:context="com.harrisonwelch.paint.DrawActivity">
 
     <ImageButton
         android:id="@+id/button_open_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="fitCenter"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/openfolder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,9 +35,9 @@
         android:id="@+id/button_save_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="fitCenter"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/savemono"
         app:layout_constraintStart_toEndOf="@+id/button_new_page"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,8 +47,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
-        android:scaleType="fitCenter"
         android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/mail"
         app:layout_constraintStart_toEndOf="@+id/button_save_image"
         app:layout_constraintTop_toTopOf="parent" />
@@ -57,12 +57,12 @@
         android:id="@+id/button_new_page"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:scaleType="fitCenter"
         android:src="@drawable/newpage"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_open_image"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="264dp" />
 
     <ImageButton
@@ -89,11 +89,8 @@
 
     <RadioGroup
         android:id="@+id/radioGroup_tools"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:checkedButton="@+id/radioButton_brush"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -117,16 +114,23 @@
         <RadioButton
             android:id="@+id/radioButton_rectangle"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@drawable/radiobutton_rectangle" />
 
         <RadioButton
             android:id="@+id/radioButton_sticker"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@drawable/radiobutton_sticker" />
+
+        <RadioButton
+            android:id="@+id/radioButton_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/radiobutton_frame" />
     </RadioGroup>
 
     <android.support.constraint.Guideline
@@ -137,20 +141,20 @@
         app:layout_constraintGuide_percent="0.25" />
 
     <!--<EditText-->
-        <!--android:id="@+id/editText_thickness"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:ems="10"-->
-        <!--android:inputType="number"-->
-        <!--android:maxLength="2"-->
-        <!--android:text="5"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/guideline"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView5" />-->
+    <!--android:id="@+id/editText_thickness"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:ems="10"-->
+    <!--android:inputType="number"-->
+    <!--android:maxLength="2"-->
+    <!--android:text="5"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/guideline"-->
+    <!--app:layout_constraintHorizontal_bias="0.0"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/textView5" />-->
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
@@ -165,14 +169,14 @@
         app:layout_constraintTop_toBottomOf="@+id/button_color" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:orientation="horizontal"
+        android:id="@+id/linearLayout_color"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
         android:background="@color/black"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView6"/>
+        app:layout_constraintTop_toBottomOf="@id/textView6" />
 
     <TextView
         android:id="@+id/textView5"
@@ -185,7 +189,7 @@
         app:layout_constraintEnd_toStartOf="@+id/pict_draw"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_color" />
 
     <!--https://android-arsenal.com/details/1/6291-->
     <abak.tr.com.boxedverticalseekbar.BoxedVertical
@@ -215,7 +219,7 @@
         android:text="Change\n Sticker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toEndOf="@+id/buntton_undo"
+        app:layout_constraintStart_toEndOf="@+id/button_undo"
         app:layout_constraintTop_toTopOf="parent" />
 
 

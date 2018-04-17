@@ -45,6 +45,9 @@ public class PictDraw extends View{
     Bitmap stickerLeaf;
 
 
+    Bitmap frame_outside;
+
+
     private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
     private int currentHeight, currentWidth;        //height and width of our widget container
     private Paint backgroundPaint;                  //draws the background
@@ -145,6 +148,9 @@ public class PictDraw extends View{
         leafDrawable.draw(canvas3);
 
         currentBitmap = stickerStar;
+
+
+
     }
 
     //==============================================================================================
@@ -226,6 +232,8 @@ public class PictDraw extends View{
             canvas.drawBitmap(this.bitmap, null, new Rect(0,0,currentWidth,currentHeight), null);
         }
 
+
+
         // go thru shaps 1 by 1
         for (Shape s : shapes){
             if (s.getPaintToUse() == Shape.PAINT_FILL) {
@@ -243,8 +251,35 @@ public class PictDraw extends View{
         Log.i(TAG_PICT_DRAW, "HELLO");
 //        canvas.drawPath(path, linePaint);
 
+        drawFrame(canvas, mainPaint);
+
         this.canvas = canvas;
 
+    }
+
+    private boolean doDrawFrame = false;
+
+    public void toggleDoDrawFrame(){
+        doDrawFrame = !doDrawFrame;
+        invalidate();
+    }
+
+    private void drawFrame(Canvas canvas, Paint paint){
+
+        if (doDrawFrame) {
+            if (frame_outside == null) {
+                Drawable frameDrawable = getResources().getDrawable((R.drawable.frame_outsitde));
+
+                frame_outside = Bitmap.createBitmap(this.getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+                Canvas canvas4 = new Canvas(frame_outside);
+                frameDrawable.setBounds(0, 0, canvas4.getWidth(), canvas4.getHeight());
+                frameDrawable.draw(canvas4);
+            }
+
+
+            canvas.drawBitmap(frame_outside, 0, 0, paint);
+        }
     }
 
     @Override
