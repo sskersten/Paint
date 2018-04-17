@@ -32,6 +32,10 @@ import java.util.Stack;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 
+
+//Lee
+
+
 public class DrawActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
