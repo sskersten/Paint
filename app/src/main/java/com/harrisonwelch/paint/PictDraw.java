@@ -63,6 +63,7 @@ public class PictDraw extends View{
 
     Stack<Shape> shapes;                            //all of the shapes that have been drawn on the canvas
     ArrayList<Path> paths;
+    public Stack<Integer> shapePositions;
 
     float currX; // current path position
     float currY; // current path position
@@ -92,6 +93,7 @@ public class PictDraw extends View{
         shapes = new Stack<>();
         matrix = new Matrix();
         paths = new ArrayList<>();
+        shapePositions = new Stack<>();
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(0xffffffff);
@@ -374,6 +376,7 @@ public class PictDraw extends View{
                 case MotionEvent.ACTION_UP:
                     stopPath(x, y);
 //                    compressDrawnLines();
+                    shapePositions.push(shapes.size());
                     invalidate();
                     break;
             }
@@ -405,6 +408,7 @@ public class PictDraw extends View{
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
             isDrawing = false;
+            shapePositions.push(shapes.size());
         }
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
             if (isDrawing) {
@@ -428,6 +432,7 @@ public class PictDraw extends View{
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
             isDrawing = false;
+            shapePositions.push(shapes.size());
         }
         //update the last drawn shape if we're still drawing it and moved
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
@@ -449,6 +454,7 @@ public class PictDraw extends View{
         }
         else if (event.getAction() == MotionEvent.ACTION_UP){
             isDrawing = false;
+            shapePositions.push(shapes.size());
         }
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
             if (isDrawing) {
@@ -484,7 +490,6 @@ public class PictDraw extends View{
     //=     PATH
     //==============================================================================================
     public void startPath(float x, float y){
-
         // make a new tmp path
         MyPath myPathTmp = new MyPath();
         myPathTmp.setColor(color);
@@ -517,6 +522,7 @@ public class PictDraw extends View{
     public void clear(){
         path.reset();
         shapes.clear();
+        shapePositions.clear();
         bitmap = null;
 //        bitmap = new Bitmap();
         invalidate();
@@ -525,19 +531,14 @@ public class PictDraw extends View{
     public void undo(){
         Log.i(TAG_PICT_DRAW,"UNDO!!!");
         MyPath path = null;
-        if (shapes.size() > 0){
+        if (shapes.size() >= 1 && shapePositions.size() >= 2){
 //            shapes.pop();
-            while (true){
-                try{
-                    path = (MyPath) shapes.peek();
-                    shapes.pop();
-                    if(shapes.size() <= 1){break;}
-                } catch (ClassCastException e){
-                    e.printStackTrace();
-                    break;
-                }
+            int startPos = shapePositions.pop();
+            int stopPos = shapePositions.pop();
+            for(int i = startPos; i > stopPos; i--){
+                shapes.pop();
             }
-            shapes.pop();
+            shapePositions.push(stopPos);
             invalidate();
         } else {
             // clear the stuff if less than zero
