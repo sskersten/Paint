@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Stack;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 
@@ -31,6 +32,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     private final static String TAG_DRAW_ACT = "TAG_DRAW_ACT";
     private final static int REQUEST_PHOTO = 100;
     private final static int REQUEST_EMAIL = 101;
+    private final static String KEY_SHAPES = "KEY_SHAPES";
+    private final static String KEY_SHAPE_POSITIONS = "KEY_SHAPE_POSITIONS";
 
     String file_path = "/sdcard";
     String fileContents = "image.png";
@@ -166,8 +169,21 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         colorIndicator = findViewById(R.id.linearLayout_color);
         colorIndicator.setBackgroundColor(pictDraw.getColor());
         brushThickness.setValue(5);
+
+        if (savedInstanceState != null){
+            pictDraw.setShapes((Stack)savedInstanceState.getSerializable(KEY_SHAPES));
+            pictDraw.setShapePositions((Stack)savedInstanceState.getSerializable(KEY_SHAPE_POSITIONS));
+        }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putSerializable(KEY_SHAPES, pictDraw.getShapes());
+        outState.putSerializable(KEY_SHAPE_POSITIONS, pictDraw.getShapePositions());
+
+        super.onSaveInstanceState(outState);
+    }
 
     private AlertDialog setupStickerDialog(){
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());

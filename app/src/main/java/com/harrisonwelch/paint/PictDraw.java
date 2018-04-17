@@ -94,6 +94,7 @@ public class PictDraw extends View{
         matrix = new Matrix();
         paths = new ArrayList<>();
         shapePositions = new Stack<>();
+        this.bitmap = null;
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(0xffffffff);
@@ -218,6 +219,24 @@ public class PictDraw extends View{
         this.currentTool = currentTool;
     }
 
+    public Stack<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(Stack<Shape> shapes) {
+        this.shapes = shapes;
+        invalidate();
+    }
+
+    public Stack<Integer> getShapePositions() {
+        return shapePositions;
+    }
+
+    public void setShapePositions(Stack<Integer> shapePositions) {
+        this.shapePositions = shapePositions;
+        invalidate();
+    }
+
     //==============================================================================================
     //=     BASE VIEW FUNCTIONS
     //==============================================================================================
@@ -232,6 +251,10 @@ public class PictDraw extends View{
         if (bitmap != null){
 //            canvas.drawBitmap(this.bitmap, matrix, mainPaint);
             canvas.drawBitmap(this.bitmap, null, new Rect(0,0,currentWidth,currentHeight), null);
+            // float left, float top
+//            int cx = (currentWidth - bitmap.getWidth()) >> 1;
+//            int cy = (currentHeight - bitmap.getHeight()) >> 1;
+//            canvas.drawBitmap(bitmap,cx,cy,null);
         }
 
 
@@ -343,6 +366,7 @@ public class PictDraw extends View{
 
 
         setMeasuredDimension(width, height);
+        Log.i(TAG_PICT_DRAW, "setMeasuredDimension("+width+", "+height+")");
 
     }
 
@@ -467,6 +491,7 @@ public class PictDraw extends View{
 
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
         Log.i(TAG_PICT_DRAW, "setNewImage(...)");
+        if (bitmap != null) {this.bitmap.recycle();}
         this.bitmap = bitmap;
 //        bitmap.setWidth(currentWidth);
 //        bitmap.setHeight(currentHeight);
@@ -474,6 +499,16 @@ public class PictDraw extends View{
 //        matrix = new Matrix();
 //        canvas.drawBitmap(bitmap,matrix ,mainPaint);
 //        canvas.drawBitmap(bitmap, null, new Rect(0,0,currentWidth/2,currentHeight), null);
+
+        Log.i(TAG_PICT_DRAW, "bitmap.getHeight() = " + bitmap.getHeight());
+        Log.i(TAG_PICT_DRAW, "bitmap.getWidth() = " + bitmap.getWidth());
+        Log.i(TAG_PICT_DRAW, "currentHeight = " + currentHeight);
+        Log.i(TAG_PICT_DRAW, "currentWidth = " + currentWidth);
+
+//        https://stackoverflow.com/questions/11202754/android-how-to-enlarge-a-bitmap#_=_
+        matrix.postScale((float)(currentWidth / bitmap.getWidth()), (float)(currentHeight / bitmap.getHeight()));
+
+        this.bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
         Log.i(TAG_PICT_DRAW, "bitmap.getHeight() = " + bitmap.getHeight());
         Log.i(TAG_PICT_DRAW, "bitmap.getWidth() = " + bitmap.getWidth());
