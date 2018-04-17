@@ -85,6 +85,15 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             }
         });
 
+        findViewById(R.id.button_undo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ( pictDraw != null ){
+                    pictDraw.undo();
+                }
+            }
+        });
+
 
         final AlertDialog stickerAlert = setupStickerDialog();
         findViewById(R.id.button_changeSticker).setOnClickListener(new View.OnClickListener() {

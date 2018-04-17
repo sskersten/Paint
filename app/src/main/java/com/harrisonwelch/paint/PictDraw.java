@@ -228,7 +228,6 @@ public class PictDraw extends View{
 
         // go thru shaps 1 by 1
         for (Shape s : shapes){
-
             if (s.getPaintToUse() == Shape.PAINT_FILL) {
                 mainPaint.setColor(s.getColor());
                 s.draw(canvas, mainPaint);
@@ -238,9 +237,11 @@ public class PictDraw extends View{
                 s.draw(canvas, linePaint);
             }
         }
+        Log.i(TAG_PICT_DRAW,"STUFF IN HERE. shapes.size() = " + shapes.size());
+
 //        linePaint.setStrokeWidth(thickness);
         Log.i(TAG_PICT_DRAW, "HELLO");
-        canvas.drawPath(path, linePaint);
+//        canvas.drawPath(path, linePaint);
 
         this.canvas = canvas;
 
@@ -266,6 +267,8 @@ public class PictDraw extends View{
     //update the size of the widget when measuring the thing
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        Log.i(TAG_PICT_DRAW, "onMeasure");
         int dpPixel = 100;
         float actualPixels = Helpers.dpToPx(dpPixel, getContext());
 
@@ -335,6 +338,7 @@ public class PictDraw extends View{
                     break;
                 case MotionEvent.ACTION_UP:
                     stopPath(x, y);
+//                    compressDrawnLines();
                     invalidate();
                     break;
             }
@@ -481,6 +485,35 @@ public class PictDraw extends View{
         bitmap = null;
 //        bitmap = new Bitmap();
         invalidate();
+    }
+
+    public void undo(){
+        Log.i(TAG_PICT_DRAW,"UNDO!!!");
+        MyPath path = null;
+        if (shapes.size() > 0){
+//            shapes.pop();
+            while (true){
+                try{
+                    path = (MyPath) shapes.peek();
+                    shapes.pop();
+                    if(shapes.size() <= 1){break;}
+                } catch (ClassCastException e){
+                    e.printStackTrace();
+                    break;
+                }
+            }
+            shapes.pop();
+            invalidate();
+        } else {
+            // clear the stuff if less than zero
+            clear();
+        }
+    }
+
+    public void deletePath(){
+        Log.i(TAG_PICT_DRAW, "compressDrawnLines");
+
+        // place the good one on the stack
     }
 }
 
