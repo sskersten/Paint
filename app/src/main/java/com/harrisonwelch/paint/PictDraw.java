@@ -163,7 +163,8 @@ public class PictDraw extends View{
 
         // then the image (if set)
         if (bitmap != null){
-            canvas.drawBitmap(bitmap, matrix, mainPaint);
+//            canvas.drawBitmap(this.bitmap, matrix, mainPaint);
+            canvas.drawBitmap(this.bitmap, null, new Rect(0,0,currentWidth,currentHeight), null);
         }
 
         // go thru shaps 1 by 1
@@ -338,9 +339,12 @@ public class PictDraw extends View{
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
         Log.i(TAG_PICT_DRAW, "setNewImage(...)");
         this.bitmap = bitmap;
-        canvas = new Canvas(alteredBitmap);
-        matrix = new Matrix();
-        canvas.drawBitmap(bitmap,matrix ,mainPaint);
+//        bitmap.setWidth(currentWidth);
+//        bitmap.setHeight(currentHeight);
+//        canvas = new Canvas(alteredBitmap);
+//        matrix = new Matrix();
+//        canvas.drawBitmap(bitmap,matrix ,mainPaint);
+//        canvas.drawBitmap(bitmap, null, new Rect(0,0,currentWidth/2,currentHeight), null);
 
         Log.i(TAG_PICT_DRAW, "bitmap.getHeight() = " + bitmap.getHeight());
         Log.i(TAG_PICT_DRAW, "bitmap.getWidth() = " + bitmap.getWidth());
