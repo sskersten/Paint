@@ -40,6 +40,8 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     private final static String KEY_SHAPE_POSITIONS = "KEY_SHAPE_POSITIONS";
     private final static String KEY_BITMAP= "KEY_BITMAP";
 
+    private final static String KEY_PICT_DRAW = "pict";
+
     String file_path = "/sdcard";
     String fileContents = "image.png";
     String fileLocation = null;
@@ -67,8 +69,10 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
 
-        pictDraw = findViewById(R.id.pict_draw);
+            pictDraw = findViewById(R.id.pict_draw);
         pictDraw.setDrawingCacheEnabled(true);
+
+
 
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,16 +186,19 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
             // bitmap
             Bitmap bmp = null;
-            String filename = savedInstanceState.getString(KEY_BITMAP);
-            try{
-                FileInputStream fis = this.openFileInput(filename);
-                bmp = BitmapFactory.decodeStream(fis);
-                fis.close();
-                Log.i(TAG_DRAW_ACT,"bmp = " + bmp);
-            } catch (Exception e){
-                e.printStackTrace();
+            String filename = savedInstanceState.getString(KEY_BITMAP, "");
+
+            if (!filename.equals("")) {
+                try {
+                    FileInputStream fis = this.openFileInput(filename);
+                    bmp = BitmapFactory.decodeStream(fis);
+                    fis.close();
+                    Log.i(TAG_DRAW_ACT, "bmp = " + bmp);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                pictDraw.setNewImage(bmp, bmp);
             }
-            pictDraw.setNewImage(bmp,bmp);
         }
     }
 
@@ -221,6 +228,20 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 //        }
 //        super.onSaveInstanceState(outState);
 //    }
+
+    /*
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(KEY_SHAPES, pictDraw.getShapes());
+        outState.putSerializable(KEY_SHAPE_POSITIONS, pictDraw.getShapePositions());
+        if (fileLocation != null && !fileLocation.equals("")) {
+            outState.putSerializable(KEY_BITMAP, fileLocation);
+        }
+    }
+    */
 
     private AlertDialog setupStickerDialog(){
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
