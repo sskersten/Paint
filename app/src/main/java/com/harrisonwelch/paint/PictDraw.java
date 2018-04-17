@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -28,13 +29,20 @@ public class PictDraw extends View{
     public static final int TOOL_BRUSH = 1;
     public static final int TOOL_LINE = 2;
     public static final int TOOL_RECTANGLE = 3;
+    public static final int TOOL_STICKER = 4;
 
     public static final int COLOR_RANDOM = -1;
 
 
     private int currentTool = TOOL_BRUSH;           //what tool is being used by the user
 
-
+    public static final int STICKER_STAR = 1;
+    public static final int STICKER_LEAF = 2;
+    public static final int STICKER_LEE = 3;
+    Bitmap currentBitmap;
+    Bitmap stickerStar;
+    Bitmap stickerLee;
+    Bitmap stickerLeaf;
 
 
     private static final String TAG_PICT_DRAW = "TAG_PICT_DRAW";
@@ -86,6 +94,8 @@ public class PictDraw extends View{
         backgroundPaint.setColor(0xffffffff);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
+
+
         color = 0xff00f0f0;
         setStrokeThickness(5);
         mainPaint = new Paint();
@@ -102,11 +112,60 @@ public class PictDraw extends View{
 
         path = new Path();
 
+        setupStickerBitmaps();
+    }
+
+    private void setupStickerBitmaps(){
+        Drawable androidDrawable = getResources().getDrawable((R.drawable.star));
+
+        int size = (int) Helpers.dpToPx(50, getContext());
+        stickerStar = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(stickerStar);
+        androidDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        androidDrawable.draw(canvas);
+
+
+        Drawable leeDrawable = getResources().getDrawable((R.drawable.lee));
+
+        stickerLee = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas2 = new Canvas(stickerLee);
+        leeDrawable.setBounds(0, 0, canvas2.getWidth(), canvas2.getHeight());
+        leeDrawable.draw(canvas2);
+
+
+
+        Drawable leafDrawable = getResources().getDrawable((R.drawable.leaves));
+
+        stickerLeaf = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas3 = new Canvas(stickerLeaf);
+        leafDrawable.setBounds(0, 0, canvas3.getWidth(), canvas3.getHeight());
+        leafDrawable.draw(canvas3);
+
+        currentBitmap = stickerStar;
     }
 
     //==============================================================================================
     //=     GETTERS/SETTERS
     //==============================================================================================
+    public void setSticker(int stickerId){
+        Log.i("Sticker", "Called stickerset with " + stickerId);
+
+        switch(stickerId){
+            case STICKER_STAR:
+                currentBitmap = stickerStar;
+                break;
+            case STICKER_LEAF:
+                currentBitmap = stickerLeaf;
+                break;
+            case STICKER_LEE:
+                currentBitmap = stickerLee;
+                break;
+        }
+    }
+
     //Sets the stroke to a passed in dp value
     // after converting it to px
     public void setStrokeThickness(int dpSize){
@@ -287,6 +346,9 @@ public class PictDraw extends View{
         if (currentTool == TOOL_LINE){
            onDrawLine(event);
         }
+        if (currentTool == TOOL_STICKER){
+            onDrawSticker(event);
+        }
 
         return true;
     }
@@ -332,6 +394,28 @@ public class PictDraw extends View{
         else if (event.getAction() == MotionEvent.ACTION_MOVE){
             ((Rectangle) shapes.peek()).setRight( (int) event.getX());
             ((Rectangle) shapes.peek()).setBottom( (int) event.getY());
+        }
+        invalidate();
+    }
+
+    //Create a line on first touch, and move the line while the user is dragging their finger around
+    private void onDrawSticker(MotionEvent event){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+
+            Sticker sticker = new Sticker(x, y, currentBitmap);
+            shapes.push(sticker);
+            isDrawing = true;
+        }
+        else if (event.getAction() == MotionEvent.ACTION_UP){
+            isDrawing = false;
+        }
+        else if (event.getAction() == MotionEvent.ACTION_MOVE){
+            if (isDrawing) {
+                ((Sticker) shapes.peek()).setX(((int) event.getX()));
+                ((Sticker) shapes.peek()).setY(((int) event.getY()));
+            }
         }
         invalidate();
     }
@@ -573,5 +657,57 @@ class MyPath implements Shape {
 
     public void lineTo(float x, float y){
         path.lineTo(x,y);
+    }
+}
+
+//==============================================================================================
+//=     STICKER
+//==============================================================================================
+class Sticker implements Shape {
+    private int x, y;
+    private Bitmap bitmap;
+
+    @Override
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawBitmap(bitmap, x, y, paint);
+    }
+
+    @Override
+    public int getColor() {
+        return 0xff000000;
+    }
+
+    @Override
+    public int getThickness() {
+        return 1;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public Sticker(int x, int y, Bitmap bitmap) {
+
+        this.x = x;
+        this.y = y;
+        this.bitmap = bitmap;
+    }
+
+    @Override
+
+    public int getPaintToUse() {
+        return PAINT_FILL;
     }
 }
