@@ -3,7 +3,6 @@ package com.harrisonwelch.paint;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 
@@ -97,6 +95,12 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 alert.show();
             }
         });
+        findViewById(R.id.linearLayout_color).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alert.show();
+            }
+        });
 
         findViewById(R.id.button_new_page).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +154,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 Log.i(TAG_DRAW_ACT, "boxedVertical = " + boxedVertical);
             }
         });
-        colorIndicator = findViewById(R.id.linearLayout);
+        colorIndicator = findViewById(R.id.linearLayout_color);
         colorIndicator.setBackgroundColor(pictDraw.getColor());
         brushThickness.setValue(5);
     }
@@ -276,7 +280,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setColor(color);
 
                 // update the color indicator on screen
-                findViewById(R.id.linearLayout).setBackgroundColor(color);
+                findViewById(R.id.linearLayout_color).setBackgroundColor(color);
             }
         });
 

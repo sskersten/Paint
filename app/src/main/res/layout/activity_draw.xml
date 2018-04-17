@@ -158,7 +158,7 @@
         app:layout_constraintTop_toBottomOf="@+id/button_color" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayout_color"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
@@ -178,7 +178,7 @@
         app:layout_constraintEnd_toStartOf="@+id/pict_draw"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_color" />
 
     <!--https://android-arsenal.com/details/1/6291-->
     <abak.tr.com.boxedverticalseekbar.BoxedVertical
