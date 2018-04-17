@@ -3,6 +3,7 @@ package com.harrisonwelch.paint;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,7 +22,10 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Stack;
@@ -34,6 +38,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     private final static int REQUEST_EMAIL = 101;
     private final static String KEY_SHAPES = "KEY_SHAPES";
     private final static String KEY_SHAPE_POSITIONS = "KEY_SHAPE_POSITIONS";
+    private final static String KEY_BITMAP= "KEY_BITMAP";
 
     String file_path = "/sdcard";
     String fileContents = "image.png";
@@ -173,6 +178,19 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         if (savedInstanceState != null){
             pictDraw.setShapes((Stack)savedInstanceState.getSerializable(KEY_SHAPES));
             pictDraw.setShapePositions((Stack)savedInstanceState.getSerializable(KEY_SHAPE_POSITIONS));
+
+            // bitmap
+            Bitmap bmp = null;
+            String filename = savedInstanceState.getString(KEY_BITMAP);
+            try{
+                FileInputStream fis = this.openFileInput(filename);
+                bmp = BitmapFactory.decodeStream(fis);
+                fis.close();
+                Log.i(TAG_DRAW_ACT,"bmp = " + bmp);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            pictDraw.setNewImage(bmp,bmp);
         }
     }
 
@@ -180,8 +198,25 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     protected void onSaveInstanceState(Bundle outState) {
 
         outState.putSerializable(KEY_SHAPES, pictDraw.getShapes());
-        outState.putSerializable(KEY_SHAPE_POSITIONS, pictDraw.getShapePositions());
+        outState.putSerializable(KEY_SHAPE_POSITIONS, pictDraw.getShapePositions());;
 
+        // source: https://stackoverflow.com/questions/11010386/passing-android-bitmap-data-within-activity-using-intent-in-android
+        // user: Zaid Daghestani
+        if (pictDraw.getBitmap() != null){
+            try{
+                Bitmap bmp = pictDraw.getBitmap();
+                String filename = "bitmap.png";
+                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
+                bmp.compress(Bitmap.CompressFormat.PNG,100,stream);
+
+                stream.close();
+                bmp.recycle();
+
+                outState.putString(KEY_BITMAP, filename);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         super.onSaveInstanceState(outState);
     }
 

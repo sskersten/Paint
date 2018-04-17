@@ -491,7 +491,6 @@ public class PictDraw extends View{
 
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
         Log.i(TAG_PICT_DRAW, "setNewImage(...)");
-        if (bitmap != null) {this.bitmap.recycle();}
         this.bitmap = bitmap;
 //        bitmap.setWidth(currentWidth);
 //        bitmap.setHeight(currentHeight);
@@ -506,9 +505,9 @@ public class PictDraw extends View{
         Log.i(TAG_PICT_DRAW, "currentWidth = " + currentWidth);
 
 //        https://stackoverflow.com/questions/11202754/android-how-to-enlarge-a-bitmap#_=_
-        matrix.postScale((float)(currentWidth / bitmap.getWidth()), (float)(currentHeight / bitmap.getHeight()));
+//        matrix.postScale((float)(currentWidth / bitmap.getWidth()), (float)(currentHeight / bitmap.getHeight()));
 
-        this.bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//        this.bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
         Log.i(TAG_PICT_DRAW, "bitmap.getHeight() = " + bitmap.getHeight());
         Log.i(TAG_PICT_DRAW, "bitmap.getWidth() = " + bitmap.getWidth());
