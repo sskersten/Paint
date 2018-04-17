@@ -232,7 +232,7 @@ public class PictDraw extends View{
             canvas.drawBitmap(this.bitmap, null, new Rect(0,0,currentWidth,currentHeight), null);
         }
 
-        drawFrame(canvas, mainPaint);
+
 
         // go thru shaps 1 by 1
         for (Shape s : shapes){
@@ -249,6 +249,8 @@ public class PictDraw extends View{
 //        linePaint.setStrokeWidth(thickness);
         Log.i(TAG_PICT_DRAW, "HELLO");
         canvas.drawPath(path, linePaint);
+
+        drawFrame(canvas, mainPaint);
 
         this.canvas = canvas;
 
