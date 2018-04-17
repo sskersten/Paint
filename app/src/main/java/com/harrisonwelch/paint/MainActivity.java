@@ -25,17 +25,27 @@ Methods used:   toggleDoDrawFrame(), PictDraw
                 drawFrame(), PictDraw
 
 
-Feature:
-Description:
-Variables used:
-Classes used:
-Methods used:
+Feature:            Email the Image
+Description:        Email the image to anyone you want!
+Variables used:     Intent emailIntent
+                    File publicFile
+Classes used:       Intent
+                    File
+                    Bitmap
+Methods used:       emailImage()
+                    startActivity()
 
-Feature:
-Description:
-Variables used:
-Classes used:
-Methods used:
+Feature:            Undo Action
+Description:        Undo the previous line, rectangle, brush-stroke, or bitmap taken by the user
+Variables used:     shapePositions
+                    startPos
+                    stopPos
+                    shapes
+Classes used:       Stack
+                    Path
+Methods used:       undo()
+                    clear()
+                    stack - pop()
  */
 
 package com.harrisonwelch.paint;

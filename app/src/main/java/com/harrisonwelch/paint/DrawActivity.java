@@ -90,6 +90,7 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             @Override
             public void onClick(View v) {
                 emailImage();
+//                startEmailActivity();
             }
         });
 
@@ -194,40 +195,38 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
-        outState.putSerializable(KEY_SHAPES, pictDraw.getShapes());
-        outState.putSerializable(KEY_SHAPE_POSITIONS, pictDraw.getShapePositions());;
-
-        // source: https://stackoverflow.com/questions/11010386/passing-android-bitmap-data-within-activity-using-intent-in-android
-        // user: Zaid Daghestani
-        if (pictDraw.getBitmap() != null){
-            try{
-                Bitmap bmp = pictDraw.getBitmap();
-                String filename = "bitmap.png";
-                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
-                bmp.compress(Bitmap.CompressFormat.PNG,100,stream);
-
-                stream.close();
-                bmp.recycle();
-
-                outState.putString(KEY_BITMAP, filename);
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        super.onSaveInstanceState(outState);
-    }
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        Log.i(TAG_DRAW_ACT, "onSaveInstanceState");
+//
+//        outState.putSerializable(KEY_SHAPES, pictDraw.getShapes());
+//        outState.putSerializable(KEY_SHAPE_POSITIONS, pictDraw.getShapePositions());;
+//
+//        // source: https://stackoverflow.com/questions/11010386/passing-android-bitmap-data-within-activity-using-intent-in-android
+//        // user: Zaid Daghestani
+//        if (pictDraw.getBitmap() != null){
+//            try{
+//                Bitmap bmp = pictDraw.getBitmap();
+//                String filename = "bitmap.png";
+//                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
+//                bmp.compress(Bitmap.CompressFormat.PNG,100,stream);
+//
+//                stream.close();
+//                bmp.recycle();
+//
+//                outState.putString(KEY_BITMAP, filename);
+//            } catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//        super.onSaveInstanceState(outState);
+//    }
 
     private AlertDialog setupStickerDialog(){
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         final View stickerAlert = inflater.inflate(R.layout.sticker_alert, null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
-
-
-
 
         builder.setView(stickerAlert);
         builder.setTitle("Choose a Sticker");
@@ -481,13 +480,19 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             this.publicFile.setReadable(true, false);
             Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
             emailIntent.setType("text/plain");
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Email Subject");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hwelch1@my.apsu.edu"});
-            emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello World!");
+//            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Email Subject");
+//            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hwelch1@my.apsu.edu"});
+//            emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello World!");
             emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(this.publicFile));
             startActivity(Intent.createChooser(emailIntent, "Select app to send this image."));
         }
+    }
+
+    public void startEmailActivity(){
+        Intent intent = new Intent(getApplicationContext(), EmailActivity.class);
+//        startActivityForResult(intent, REQUEST_EMAIL);
+        startActivity(intent);
     }
 
     public void saveImagePublic(){
@@ -542,6 +547,10 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                     e.printStackTrace();
                 }
 
+            }
+            if (requestCode == REQUEST_EMAIL){
+//                emailImage();
+                Log.i(TAG_DRAW_ACT, "REQUEST_EMAIL");
             }
         }
 
