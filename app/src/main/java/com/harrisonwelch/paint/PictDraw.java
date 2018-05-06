@@ -594,118 +594,103 @@ public class PictDraw extends View{
 //Defines a shape, which must know how to draw itself when given a canvas and a paint,
 // have a color, and know what type of paint to use.
 // using this lets us have a stack of shapes that we can draw in order
-interface Shape{
-    void draw(Canvas canvas, Paint paint);
-    int getColor();
-    int getThickness();
+class Shape{
+    //setup the color, thickness, and paint to use.
+    public Shape(int color, int thickness, int paintToUse) {
+        this.color = color;
+        this.thickness = thickness;
+        this.paintToUse = paintToUse;
+    }
 
-    int PAINT_FILL = 1;
-    int PAINT_STROKE = 0;
-    int getPaintToUse();
+    //function that MUST be overridden in
+    public void draw(Canvas canvas, Paint paint){
+        throw new RuntimeException("Error: No draw function overridden in the current class you're trying to use.");
+    }
+
+    //gets the color/thickness of the thing to draw
+    private int color;
+    private int thickness;
+    public int getThickness() {
+        return thickness;
+    }
+    public int getColor(){
+        return color;
+    }
+    public void setColor(int color) {this.color = color;}
+    public void setThickness(int thickness) {this.thickness = thickness;}
+
+    //Update the type of paint being used
+    static final int PAINT_FILL = 1;
+    static final int PAINT_STROKE = 0;
+    private int paintToUse;
+    protected void setPaintToUse(int paintCode){this.paintToUse = paintCode;}
+    public int getPaintToUse(){return paintToUse;}
 }
 
 //Basic wrapper class for Rect that lets it also hold a color
 //==============================================================================================
 //=     RECTANGLE
 //==============================================================================================
-class Rectangle implements Shape{
+class Rectangle extends Shape{
     private Rect rect;
-    private int color;
 
     Rectangle(int color, int left, int top, int right, int bottom){
+        super(color, 0, Shape.PAINT_FILL);
         rect = new Rect(left, top, right, bottom);
-        this.color = color;
     }
 
+    @Override
     public void draw(Canvas canvas, Paint paint){
         canvas.drawRect(getRect(), paint);
     }
 
+    //update the parts of the rectangle
     public void setRight(int right){
         rect.right = right;
     }
-
     public void setBottom(int bottom){
         rect.bottom = bottom;
     }
-
-    public void setColor(int color){
-        this.color = color;
-    }
-
-    public int getColor(){
-        return color;
-    }
-
     public Rect getRect(){
         return rect;
     }
-
-    public int getThickness(){return 1;};
-
-    @Override
-    public int getPaintToUse() {
-        return PAINT_FILL;
-    }
-
 }
 
 //==============================================================================================
 //=     LINE
 //==============================================================================================
-class Line implements Shape{
+class Line extends Shape{
     private int startx;
     private int starty;
     private int endx;
     private int endy;
-    private int color;
-    private int thickness;
-
-
 
     public Line(int startx, int starty, int endx, int endy, int color, int thickness) {
+        super(color, thickness, Shape.PAINT_STROKE);
         this.startx = startx;
         this.starty = starty;
         this.endx = endx;
-
         this.endy = endy;
-        this.color = color;
-        this.thickness = thickness;
     }
 
     public void draw(Canvas canvas, Paint paint){
         canvas.drawLine(startx, starty, endx, endy, paint);
     }
 
+    //update the endpoints of the line
     public void setEndx(int endx) {
         this.endx = endx;
     }
-
     public void setEndy(int endy) {
         this.endy = endy;
-    }
-
-    public int getThickness() {
-        return thickness;
-    }
-
-    public int getColor(){
-        return color;
-    }
-
-    @Override
-    public int getPaintToUse() {
-        return PAINT_STROKE;
     }
 }
 
 //==============================================================================================
 //=     MYPATH
 //==============================================================================================
-class MyPath implements Shape {
+class MyPath extends Shape {
     private Path path;
-    private int color;
-    private int thickness;
 
     public Path getPath() {
         return path;
@@ -715,50 +700,26 @@ class MyPath implements Shape {
         this.path = path;
     }
 
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    public void setThickness(int thickness){
-        this.thickness = thickness;
-    }
-
     public MyPath(){
+        super(0xff000000, 5, Shape.PAINT_STROKE);
         this.path = new Path();
-        this.color = 0xFF000000; // default to black
-        this.thickness = 5;
     }
 
     public MyPath(Path path, int color, int thickness) {
+        super(color, thickness, Shape.PAINT_STROKE);
         this.path = path;
-        this.color = color;
-        this.thickness = thickness;
     }
 
     public void draw(Canvas canvas, Paint paint){
         canvas.drawPath(path, paint);
     }
 
-    @Override
-    public int getColor() {
-        return color;
-    }
-
-    public int getThickness(){return thickness;};
-
-    @Override
-    public int getPaintToUse() {
-        return PAINT_STROKE;
-    }
-
     public void moveTo(float x, float y){
         path.moveTo(x,y);
     }
-
     public void quadTo(float x, float y, float x2, float y2){
         path.quadTo(x,y,x2,y2);
     }
-
     public void lineTo(float x, float y){
         path.lineTo(x,y);
     }
@@ -767,51 +728,35 @@ class MyPath implements Shape {
 //==============================================================================================
 //=     STICKER
 //==============================================================================================
-class Sticker implements Shape {
-    private int x, y;
-    private Bitmap bitmap;
-
-    @Override
-    public void draw(Canvas canvas, Paint paint) {
-        canvas.drawBitmap(bitmap, x, y, paint);
-    }
-
-    @Override
-    public int getColor() {
-        return 0xff000000;
-    }
-
-    @Override
-    public int getThickness() {
-        return 1;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
+class Sticker extends Shape {
+    private int x, y;           //position of the sticker
+    private Bitmap bitmap;      //bitmap to draw
 
     public Sticker(int x, int y, Bitmap bitmap) {
-
+        super(0xff000000, 0, Shape.PAINT_FILL);
         this.x = x;
         this.y = y;
         this.bitmap = bitmap;
     }
 
     @Override
-
-    public int getPaintToUse() {
-        return PAINT_FILL;
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawBitmap(bitmap, x, y, paint);
     }
+
+    //position getters and setters
+    public int getX() {
+        return x;
+    }
+    public void setX(int x) {
+        this.x = x;
+    }
+    public int getY() {
+        return y;
+    }
+    public void setY(int y) {
+        this.y = y;
+    }
+
+
 }
