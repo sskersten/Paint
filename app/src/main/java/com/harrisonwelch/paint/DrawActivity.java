@@ -186,7 +186,6 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
         if (savedInstanceState != null){
             pictDraw.setShapes((Stack)savedInstanceState.getSerializable(KEY_SHAPES));
-            pictDraw.setShapePositions((Stack)savedInstanceState.getSerializable(KEY_SHAPE_POSITIONS));
 
             // bitmap
             Bitmap bmp = null;

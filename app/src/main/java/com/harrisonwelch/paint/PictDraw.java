@@ -60,14 +60,8 @@ public class PictDraw extends View{
     Canvas canvas;
     Matrix matrix;
     Bitmap bitmap;
-    Path path;
 
     Stack<Shape> shapes;                            //all of the shapes that have been drawn on the canvas
-    ArrayList<Path> paths;
-    public Stack<Integer> shapePositions;
-
-    float currX; // current path position
-    float currY; // current path position
 
     //==============================================================================================
     //=     SETUP
@@ -93,8 +87,6 @@ public class PictDraw extends View{
         rand = new Random();
         shapes = new Stack<>();
         matrix = new Matrix();
-        paths = new ArrayList<>();
-        shapePositions = new Stack<>();
         this.bitmap = null;
 
         backgroundPaint = new Paint();
@@ -115,9 +107,6 @@ public class PictDraw extends View{
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setStrokeWidth(thickness);
         linePaint.setStrokeJoin(Paint.Join.ROUND);
-
-
-        path = new Path();
 
         setupStickerBitmaps();
     }
@@ -152,9 +141,6 @@ public class PictDraw extends View{
         leafDrawable.draw(canvas3);
 
         currentBitmap = stickerStar;
-
-
-
     }
 
     //==============================================================================================
@@ -178,19 +164,18 @@ public class PictDraw extends View{
 
     //Sets the stroke to a passed in dp value
     // after converting it to px
-    public void setStrokeThickness(int dpSize){
-        thickness = (int) Helpers.dpToPx(dpSize, getContext());
-    }
-
     public int getStrokeThickness(){
         return thickness;
+    }
+    public void setStrokeThickness(int dpSize){
+        thickness = (int) Helpers.dpToPx(dpSize, getContext());
     }
 
     public Bitmap getBitmap(){
         return this.bitmap;
     }
 
-    //return a random color if set to that, else return the color
+    //return a random color if set to -1, else return the color
     public int getColor() {
         if (color == -1){
             return rand.nextInt(0x1000000) + 0xff000000;
@@ -201,13 +186,11 @@ public class PictDraw extends View{
 
     public void setColor(int color) {
         this.color = color;
-        this.linePaint.setColor(color); // sometimes drawing goes in the previous color
     }
 
     public Canvas getCanvas() {
         return canvas;
     }
-
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
     }
@@ -215,7 +198,6 @@ public class PictDraw extends View{
     public int getCurrentTool() {
         return currentTool;
     }
-
     public void setCurrentTool(int currentTool) {
         this.currentTool = currentTool;
     }
@@ -223,18 +205,8 @@ public class PictDraw extends View{
     public Stack<Shape> getShapes() {
         return shapes;
     }
-
     public void setShapes(Stack<Shape> shapes) {
         this.shapes = shapes;
-        invalidate();
-    }
-
-    public Stack<Integer> getShapePositions() {
-        return shapePositions;
-    }
-
-    public void setShapePositions(Stack<Integer> shapePositions) {
-        this.shapePositions = shapePositions;
         invalidate();
     }
 
@@ -260,7 +232,7 @@ public class PictDraw extends View{
 
 
 
-        // go thru shaps 1 by 1
+        // go thru shapes 1 by 1
         for (Shape s : shapes){
             Log.i("Shapes", "Found a shape.");
             if (s.getPaintToUse() == Shape.PAINT_FILL) {
@@ -430,29 +402,16 @@ public class PictDraw extends View{
     }
 
     public void clear(){
-        path.reset();
         shapes.clear();
-        shapePositions.clear();
         bitmap = null;
-//        bitmap = new Bitmap();
         invalidate();
     }
 
     public void undo(){
         Log.i(TAG_PICT_DRAW,"UNDO!!!");
-        MyPath path = null;
-        if (shapes.size() >= 1 && shapePositions.size() >= 2){
-//            shapes.pop();
-            int startPos = shapePositions.pop();
-            int stopPos = shapePositions.pop();
-            for(int i = startPos; i > stopPos; i--){
-                shapes.pop();
-            }
-            shapePositions.push(stopPos);
+        if (shapes.size() >= 1){
+            shapes.pop();
             invalidate();
-        } else {
-            // clear the stuff if less than zero
-            clear();
         }
     }
 
