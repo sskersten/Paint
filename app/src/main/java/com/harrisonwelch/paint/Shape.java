@@ -5,6 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.view.MotionEvent;
+import android.view.View;
+
+import java.util.Stack;
 
 /**
  * Created by Suzanne on 5/6/2018.
@@ -23,6 +27,30 @@ public class Shape{
     //function that MUST be overridden in
     public void draw(Canvas canvas, Paint paint){
         throw new RuntimeException("Error: No draw function overridden in the current class you're trying to use.");
+    }
+
+    private boolean isDrawing = false;
+    //handles how to update the current shape between onTouchEvents
+    public void onTouchEventHandler(MotionEvent event, View view){
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                isDrawing = true;
+                view.invalidate();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (isDrawing) {
+                    onTouchMove(event);
+                    view.invalidate();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                isDrawing = false;
+                break;
+        }
+    }
+
+    public void onTouchMove(MotionEvent event){
+        throw new RuntimeException("Error: No onTouchMove function overridden in the current class you're trying to use.");
     }
 
     //gets the color/thickness of the thing to draw
@@ -62,6 +90,12 @@ class Rectangle extends Shape{
         canvas.drawRect(getRect(), paint);
     }
 
+    @Override
+    public void onTouchMove(MotionEvent event) {
+        this.setRight( (int) event.getX());
+        this.setBottom( (int) event.getY());
+    }
+
     //update the parts of the rectangle
     public void setRight(int right){
         rect.right = right;
@@ -78,12 +112,12 @@ class Rectangle extends Shape{
 //=     LINE
 //==============================================================================================
 class Line extends Shape{
-    private int startx;
-    private int starty;
-    private int endx;
-    private int endy;
+    private float startx;
+    private float starty;
+    private float endx;
+    private float endy;
 
-    public Line(int startx, int starty, int endx, int endy, int color, int thickness) {
+    public Line(float startx, float starty, float endx, float endy, int color, int thickness) {
         super(color, thickness, Shape.PAINT_STROKE);
         this.startx = startx;
         this.starty = starty;
@@ -95,11 +129,17 @@ class Line extends Shape{
         canvas.drawLine(startx, starty, endx, endy, paint);
     }
 
+    @Override
+    public void onTouchMove(MotionEvent event) {
+        setEndx(( event.getX()));
+        setEndy(( event.getY()));
+    }
+
     //update the endpoints of the line
-    public void setEndx(int endx) {
+    public void setEndx(float endx) {
         this.endx = endx;
     }
-    public void setEndy(int endy) {
+    public void setEndy(float endy) {
         this.endy = endy;
     }
 }
@@ -133,6 +173,11 @@ class MyPath extends Shape {
         canvas.drawPath(path, paint);
     }
 
+    @Override
+    public void onTouchMove(MotionEvent event) {
+        continuePath(event.getX(), event.getY());
+    }
+
     public void moveTo(float x, float y){
         path.moveTo(x,y);
     }
@@ -161,6 +206,12 @@ class Sticker extends Shape {
     @Override
     public void draw(Canvas canvas, Paint paint) {
         canvas.drawBitmap(bitmap, x, y, paint);
+    }
+
+    @Override
+    public void onTouchMove(MotionEvent event) {
+        setX(((int) event.getX()));
+        setY(((int) event.getY()));
     }
 
     //position getters and setters

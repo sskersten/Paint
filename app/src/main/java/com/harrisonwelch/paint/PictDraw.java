@@ -376,118 +376,27 @@ public class PictDraw extends View{
     //==============================================================================================
     //=     TOUCH EVENTS
     //==============================================================================================
-    private boolean isDrawing = false;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN){
-            performClick();         //needed by android studio to handle normal click event stuff
-        }
-
         float x = event.getX();
         float y = event.getY();
 
-        Log.i(TAG_PICT_DRAW, "x = " + x + ", y = " + y);
+        //create the needed shape
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+            performClick();         //needed by android studio to handle normal click event stuff
 
-        if (currentTool == TOOL_BRUSH) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    shapes.add(new MyPath(x, y, color, thickness));
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    ((MyPath) shapes.peek()).continuePath(x, y);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    ((MyPath) shapes.peek()).lineTo(x,y);
-                    shapePositions.push(shapes.size());
-                    invalidate();
-                    break;
+            //create a new shape based on which shape is currently selected
+            switch (currentTool){
+                case TOOL_BRUSH:    shapes.push(new MyPath(x, y, color, thickness));                                       break;
+                case TOOL_LINE:     shapes.push(new Line(x, y, x+1, y+1, color, thickness));                    break;
+                case TOOL_RECTANGLE:shapes.push(new Rectangle(color, (int) x, (int) y, (int) x+1, (int) y+1)); break;
+                case TOOL_STICKER:  shapes.push( new Sticker((int)x,(int) y, currentBitmap));                             break;
             }
         }
 
-        if (currentTool == TOOL_RECTANGLE){
-           onDrawRectangle(event);
-        }
-        if (currentTool == TOOL_LINE){
-           onDrawLine(event);
-        }
-        if (currentTool == TOOL_STICKER){
-            onDrawSticker(event);
-        }
-
+        //handles the moving of your finger and when you up your finger
+        shapes.peek().onTouchEventHandler(event, this);
         return true;
-    }
-
-
-    //Create a line on first touch, and move the line while the user is dragging their finger around
-    private void onDrawLine(MotionEvent event){
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            int x = (int) event.getX();
-            int y = (int) event.getY();
-
-            Line line = new Line(x, y, x+1, y+1, color, thickness);
-            shapes.push(line);
-            isDrawing = true;
-        }
-        else if (event.getAction() == MotionEvent.ACTION_UP){
-            isDrawing = false;
-            shapePositions.push(shapes.size());
-        }
-        else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            if (isDrawing) {
-                ((Line) shapes.peek()).setEndx(((int) event.getX()));
-                ((Line) shapes.peek()).setEndy(((int) event.getY()));
-            }
-        }
-        invalidate();
-    }
-
-    //handles all of the drawing of rectangles at different stages of the touch
-    private void onDrawRectangle(MotionEvent event){
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            int x = (int) event.getX();
-            int y = (int) event.getY();
-
-            Rectangle rect = new Rectangle(color, x, y, x+1, y+1);
-            rect.setColor(color);
-            shapes.push(rect);
-            isDrawing = true;
-        }
-        else if (event.getAction() == MotionEvent.ACTION_UP){
-            isDrawing = false;
-            shapePositions.push(shapes.size());
-        }
-        //update the last drawn shape if we're still drawing it and moved
-        else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            ((Rectangle) shapes.peek()).setRight( (int) event.getX());
-            ((Rectangle) shapes.peek()).setBottom( (int) event.getY());
-        }
-        invalidate();
-    }
-
-    //Create a line on first touch, and move the line while the user is dragging their finger around
-    private void onDrawSticker(MotionEvent event){
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            int x = (int) event.getX();
-            int y = (int) event.getY();
-
-            Sticker sticker = new Sticker(x, y, currentBitmap);
-            shapes.push(sticker);
-            isDrawing = true;
-        }
-        else if (event.getAction() == MotionEvent.ACTION_UP){
-            isDrawing = false;
-            shapePositions.push(shapes.size());
-        }
-        else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            if (isDrawing) {
-                ((Sticker) shapes.peek()).setX(((int) event.getX()));
-                ((Sticker) shapes.peek()).setY(((int) event.getY()));
-            }
-        }
-        invalidate();
     }
 
     public void setNewImage(Bitmap alteredBitmap, Bitmap bitmap){
@@ -520,8 +429,6 @@ public class PictDraw extends View{
         invalidate();
     }
 
-
-
     public void clear(){
         path.reset();
         shapes.clear();
@@ -549,9 +456,4 @@ public class PictDraw extends View{
         }
     }
 
-    public void deletePath(){
-        Log.i(TAG_PICT_DRAW, "compressDrawnLines");
-
-        // place the good one on the stack
-    }
 }
