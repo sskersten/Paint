@@ -262,6 +262,7 @@ public class PictDraw extends View{
 
         // go thru shaps 1 by 1
         for (Shape s : shapes){
+            Log.i("Shapes", "Found a shape.");
             if (s.getPaintToUse() == Shape.PAINT_FILL) {
                 mainPaint.setColor(s.getColor());
                 s.draw(canvas, mainPaint);
@@ -538,11 +539,11 @@ public class PictDraw extends View{
     public void continuePath(float x, float y){
         MyPath myPathTmp = (MyPath)shapes.get(shapes.size()-1);
         if ( Math.abs(currX - x) >= 4 || Math.abs(currY - y) >= 4 ){
+            //myPathTmp.lineTo(x, y);
             myPathTmp.quadTo(currX,currY,(x+currX)/2,(y+currY)/2);
 //            path.lineTo(x,y);
             currX = x;
             currY = y;
-            shapes.add(myPathTmp);
         }
     }
 
@@ -551,7 +552,6 @@ public class PictDraw extends View{
         myPathTmp.lineTo(x,y);
         currX = x;
         currY = y;
-        shapes.add(myPathTmp);
     }
 
     public void clear(){
