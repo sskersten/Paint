@@ -192,6 +192,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout_color" />
 
     <!--https://android-arsenal.com/details/1/6291-->
+
     <abak.tr.com.boxedverticalseekbar.BoxedVertical
         android:id="@+id/boxedvertical_thickness"
         android:layout_width="25dp"
@@ -208,6 +209,16 @@
         app:progressColor="#77FF77"
         app:step="1"
         app:textSize="20sp" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout_openSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroup_tools"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_height="50dp"
+        tools:layout_width="50dp" />
 
 
 </android.support.constraint.ConstraintLayout>

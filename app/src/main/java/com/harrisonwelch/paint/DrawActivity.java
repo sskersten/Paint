@@ -3,6 +3,8 @@ package com.harrisonwelch.paint;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -76,7 +79,14 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
             pictDraw = findViewById(R.id.pict_draw);
         pictDraw.setDrawingCacheEnabled(true);
 
+       // if (getFragmentManager().findFragmentById(android.R.id.content) == null)
 
+        findViewById(R.id.radioGroup_tools).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleSettingsFragment(new SettingsFragment());
+            }
+        });
 
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,6 +213,46 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
                 pictDraw.setNewImage(bmp, bmp);
             }
         }
+
+
+
+
+
+    }
+
+    private void toggleSettingsFragment(Fragment fragment){
+        int id = R.id.frameLayout_openSettings;
+        Fragment knownFrag = getFragmentManager().findFragmentById(id);
+        if (knownFrag == null){
+            getFragmentManager().beginTransaction()
+                    .add(id, fragment)
+                    .commit();
+        } else {
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.remove(fragment).commit();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        }
+    }
+
+    //adds a passed in fragment to element with passed in id
+    private void addFragment(int id, Fragment fragment){
+        Fragment knownFrag = getFragmentManager().findFragmentById(id);
+        if (knownFrag == null) {
+            getFragmentManager().beginTransaction()
+                    .add(id, fragment)
+                    .commit();
+        }
+    }
+
+    //removes any fragment from the view with passed in id
+    private void removeFragment(int id){
+        Fragment fragment = getFragmentManager().findFragmentById(id);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        if (fragment != null){
+            transaction.remove(fragment).commit();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        }
     }
 
 //    @Override
@@ -315,9 +365,11 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
         switch(checkedId){
             case R.id.radioButton_brush:
                 pictDraw.setCurrentTool(PictDraw.TOOL_BRUSH);
+                toggleSettingsFragment(new SettingsFragment());
                 break;
             case R.id.radioButton_line:
                 pictDraw.setCurrentTool(PictDraw.TOOL_LINE);
+                toggleSettingsFragment(new SettingsFragment());
                 break;
             case R.id.radioButton_rectangle:
                 pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
