@@ -81,12 +81,28 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
 
        // if (getFragmentManager().findFragmentById(android.R.id.content) == null)
 
-        findViewById(R.id.radioGroup_tools).setOnClickListener(new View.OnClickListener() {
+
+        //------------------------------------------------------------------------------------------
+        class RadioButtonClickListener implements View.OnClickListener {
+            Fragment fragment;
+
+            public RadioButtonClickListener(Fragment fragment){
+                this.fragment = fragment;
+            }
+
             @Override
             public void onClick(View view) {
-                toggleSettingsFragment(new SettingsFragment());
+                toggleSettingsFragment(fragment);
             }
-        });
+        }
+
+        findViewById(R.id.radioButton_brush).setOnClickListener(new RadioButtonClickListener(new SettingsFragment()));
+        findViewById(R.id.radioButton_line).setOnClickListener(new RadioButtonClickListener(new SettingsFragment()));
+        findViewById(R.id.radioButton_rectangle).setOnClickListener(new RadioButtonClickListener(new SettingsFragment()));
+        findViewById(R.id.radioButton_sticker).setOnClickListener(new RadioButtonClickListener(new SettingsFragment()));
+        findViewById(R.id.radioButton_frame).setOnClickListener(new RadioButtonClickListener(new SettingsFragment()));
+
+        //-------------------------------------------------------------------------------------------
 
         findViewById(R.id.button_open_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,38 +237,30 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     }
 
     private void toggleSettingsFragment(Fragment fragment){
+        //getFragmentManager().beginTransaction()
+          //      .replace(R.id.frameLayout_openSettings, fragment);
+
         int id = R.id.frameLayout_openSettings;
         Fragment knownFrag = getFragmentManager().findFragmentById(id);
         if (knownFrag == null){
+            Helpers.makeToast("Adding fragment" + knownFrag, this);
             getFragmentManager().beginTransaction()
                     .add(id, fragment)
                     .commit();
         } else {
+            Helpers.makeToast("removing fragment" + knownFrag, this);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.remove(fragment).commit();
+            transaction.remove(knownFrag).commit();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         }
     }
 
-    //adds a passed in fragment to element with passed in id
-    private void addFragment(int id, Fragment fragment){
-        Fragment knownFrag = getFragmentManager().findFragmentById(id);
-        if (knownFrag == null) {
-            getFragmentManager().beginTransaction()
-                    .add(id, fragment)
-                    .commit();
+    //remove the current fragment and add in the new one required by the newly pressed button
+    private void forceFragmentOn(int id){
+        if ((getFragmentManager().findFragmentById(R.id.frameLayout_openSettings)) == null){
+            //findViewById(id).callOnClick();
         }
-    }
 
-    //removes any fragment from the view with passed in id
-    private void removeFragment(int id){
-        Fragment fragment = getFragmentManager().findFragmentById(id);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        if (fragment != null){
-            transaction.remove(fragment).commit();
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        }
     }
 
 //    @Override
@@ -360,27 +368,32 @@ public class DrawActivity extends Activity implements RadioGroup.OnCheckedChange
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
         PictDraw pictDraw = findViewById(R.id.pict_draw);
+        Fragment fragment  = new SettingsFragment();  //the fragment to pop up for settings.
 
         //figure out what tool is checked and set the appropriate value in our tool list.
         switch(checkedId){
             case R.id.radioButton_brush:
                 pictDraw.setCurrentTool(PictDraw.TOOL_BRUSH);
-                toggleSettingsFragment(new SettingsFragment());
                 break;
             case R.id.radioButton_line:
                 pictDraw.setCurrentTool(PictDraw.TOOL_LINE);
-                toggleSettingsFragment(new SettingsFragment());
+
                 break;
             case R.id.radioButton_rectangle:
                 pictDraw.setCurrentTool(PictDraw.TOOL_RECTANGLE);
+
                 break;
             case R.id.radioButton_sticker:
-
+                fragment = new SettingsFragment();      //special fragment for stickers
                 break;
             case R.id.radioButton_frame:
-
+                fragment = new SettingsFragment();      //special fragment for frames
                 break;
         }
+
+
+        forceFragmentOn(checkedId);
+
     }
 
 
